@@ -96,7 +96,8 @@ public class Main {
 						continue;
 
 					// creates new shift
-					Shift shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1]);
+					Shift shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0],
+							shiftTime.split("-")[1]);
 
 					// assigns new shift
 					schedule[e][j - startCol] = shift;
@@ -125,12 +126,20 @@ public class Main {
 		for(int sorted : unsorted)
 			System.out.println(sorted);*/
 		
-		//Print out all shifts sorted in chronological order
-		// Print out all shifts that are parsed by the program
-		for (Shift[] shiftRow : schedule)
+		// Print out all shifts that are parsed by the program and sorted in chronological order
+		for(int x = 0; x < numEmployees; x++){
+			for(int y = 0; y < 7; y++){
+				if(schedule[x][y] != null){
+					System.out.println(schedule[x][y]);					
+				}
+			}
+		}	
+		
+		// Print out all shifts that are parsed by the program (initial method)
+		/*for (Shift[] shiftRow : schedule)
 			for (Shift shift : shiftRow)
 				if(shift != null)
-					System.out.println(shift);
+					System.out.println(shift);*/
 	}
 
 	//Searching for shift times
