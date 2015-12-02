@@ -7,7 +7,7 @@
  *                                                               *
  * Copyright (C) 2015, Christian Alexander, Brett Allen          *
  *****************************************************************/
-//package here
+//package
 
 /**
  * @author Christian Bryce Alexander and Brett Michael Allen
@@ -28,7 +28,7 @@ public class Shift {
 
 	@Override
 	public String toString() {
-		return employee + "\nPosition: " + position + 
+		return "Employee: " + employee + "\nPosition: " + position + 
 				"\nTime: " + startTime + " - " + endTime + "\n";
 	}
 }
