@@ -7,7 +7,7 @@
  *                                                               *
  * Copyright (C) 2015, Christian Alexander, Brett Allen          *
  *****************************************************************/
-//package here
+package net.alexanderdev.csvparsing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * @author Christian Bryce Alexander and Brett Michael Allen
@@ -24,6 +26,7 @@ import java.util.ArrayList;
  */
 public class Main {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
+	public static final int DAYS = 7;
 
 	// Put file in root of "res" folder and prepend a "/" in front of the
 	// filename
@@ -61,7 +64,7 @@ public class Main {
 		}
 		// end find
 
-		schedule = new Shift[numEmployees][7];
+		schedule = new Shift[numEmployees][DAYS];
 
 		int e = -1;
 
@@ -105,7 +108,7 @@ public class Main {
 			}
 		}
 
-		//Implement chronological sorting algorithm here (will be withing for loop for shiftRow[]
+		//Implement chronological sorting algorithm here (will be within for loop for shiftRow[]
 		//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
 		/*boolean swapped = true;
 		int tmp;
@@ -126,20 +129,87 @@ public class Main {
 		for(int sorted : unsorted)
 			System.out.println(sorted);*/
 		
+		boolean swapped = true;
+		Shift[][] temp = new Shift[numEmployees][DAYS];
+		String[] tmp = new String[4];	
+		
+		int test = convertToMilitary("8:00p");		
+		System.out.println(test);		
+		
+		//Sorting here
+		//NOTE: Each row represents the employee, each column represents the day		
+		/*do{
+			swapped = false;
+			
+			for(int row = 0; row < numEmployees; row++){
+				for(int col = 0; col < DAYS - 1; col++){
+					if(schedule[row][col] != null && schedule[row][col + 1] != null){
+						if(schedule[row][col].startTime < schedule[row][col + 1].startTime){
+							temp[row][col] = schedule[row][col];
+							schedule[row][col] = schedule[row][col + 1];
+							schedule[row][col + 1] = temp[row][col];
+							
+							tmp[0] = schedule[row][col].employee;
+							tmp[1] = schedule[row][col].position;
+							tmp[2] = schedule[row][col].startTime;
+							tmp[3] = schedule[row][col].endTime;
+							
+							schedule[row][col].employee = schedule[row][col + 1].employee;
+							schedule[row][col].position = schedule[row][col + 1].position;
+							schedule[row][col].startTime = schedule[row][col + 1].startTime;
+							schedule[row][col].endTime = schedule[row][col + 1].endTime;							
+							
+							schedule[row][col + 1].employee = tmp[0];
+							schedule[row][col + 1].position = tmp[1];
+							schedule[row][col + 1].startTime = tmp[2];
+							schedule[row][col + 1].endTime = tmp[3];							
+							
+							swapped = true;
+						}
+					}
+				}
+			}				
+		}while(swapped);	*/		
+		
 		// Print out all shifts that are parsed by the program and sorted in chronological order
-		for(int x = 0; x < numEmployees; x++){
-			for(int y = 0; y < 7; y++){
+		/*for(int x = 0; x < numEmployees; x++){
+			for(int y = 0; y < DAYS; y++){
 				if(schedule[x][y] != null){
 					System.out.println(schedule[x][y]);					
 				}
 			}
-		}	
+		}	*/
 		
 		// Print out all shifts that are parsed by the program (initial method)
 		/*for (Shift[] shiftRow : schedule)
 			for (Shift shift : shiftRow)
 				if(shift != null)
 					System.out.println(shift);*/
+	}
+	
+	//Get time in standard format and convert it to military time for efficiency
+	public static int convertToMilitary(String standardTime){
+		int militaryTime = 0;		
+		String[] tmp = standardTime.split(":");
+		boolean pastNoon = false;
+		
+		if(standardTime.contains("p")){
+			pastNoon = true;
+		}
+		
+		tmp[1] = tmp[1].replaceAll("[^\\d.]", "");
+		
+		try {
+			militaryTime = Integer.parseInt(tmp[0] + tmp[1]);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		
+		if(pastNoon){
+			return militaryTime + 1200;
+		}else{
+			return militaryTime;
+		}
 	}
 
 	//Searching for shift times
