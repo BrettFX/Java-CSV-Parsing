@@ -17,35 +17,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Scanner;
 
 /**
  * @author Christian Bryce Alexander and Brett Michael Allen
  * @since Oct 22, 2015, 1:13:31 PM
  */
-public class Main {
+public class Main 
+{
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
 	public static final int DAYS = 7;
-
-	// Put file in root of "res" folder and prepend a "/" in front of the
-	// filename
 	public static final String TEST = "/Test Schedule for Brett.csv";
-	public static final String FULL = "/FLS Wall Schedule.csv";
+	public static final String PATH = "/FLS Wall Schedule.csv";
 
 	public static void main(String[] args) {
-		Shift[][] schedule;
-
-		//              TEST or FULL Here
-		//                       |
-		//                       V
+		Shift[][] schedule;		
 		String[] csv = readFile(TEST);
+		String day = "";
+		Scanner input = new Scanner(System.in);
 
 		int startCol = 0;
-
 		int numEmployees = 0;
+		int e = -1;
+		int choice = -1;
 
-		// Finds where the dates column starts for data parsing
+		// Search where the dates column starts for data parsing
 		for (String line : csv) {
 			if (line.contains(DATES)) {
 				String[] tokens = line.split(",");
@@ -62,11 +58,9 @@ public class Main {
 				numEmployees++;
 			}
 		}
-		// end find
+		// End search
 
-		schedule = new Shift[numEmployees][DAYS];
-
-		int e = -1;
+		schedule = new Shift[numEmployees][DAYS];		
 
 		// Parsing data
 		for (int i = 0; i < csv.length; i++) {
@@ -100,85 +94,95 @@ public class Main {
 
 					// creates new shift
 					Shift shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0],
-							shiftTime.split("-")[1]);
+							shiftTime.split("-")[1], j - 2);
 
 					// assigns new shift
 					schedule[e][j - startCol] = shift;
 				}
 			}
 		}
-
-		//Implement chronological sorting algorithm here (will be within for loop for shiftRow[]
-		//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
-		/*boolean swapped = true;
-		int tmp;
-		int[] unsorted = {1,3,4,8,9,6,2,7,5};
+		//End parsing
 		
-		do{
-			swapped = false;
-			for(int i = 0; i < (unsorted.length - 1);i++){
-				if(unsorted[i] > unsorted[i + 1]){
-					tmp = unsorted[i];
-					unsorted[i] = unsorted[i + 1];
-					unsorted[i + 1] = tmp;
-					swapped = true;
-				}
-			}
-		}while(swapped);
+		//Sort the schedule in chronological order to use for displaying
+		sortAscending(schedule, numEmployees, DAYS);
 		
-		for(int sorted : unsorted)
-			System.out.println(sorted);*/
-		
-		boolean swapped = true;
-		Shift[][] temp = new Shift[numEmployees][DAYS];
-		String[] tmp = new String[4];	
-		
-		int test = convertToMilitary("8:00p");		
-		System.out.println(test);		
-		
-		//Sorting here
-		//NOTE: Each row represents the employee, each column represents the day		
-		/*do{
-			swapped = false;
+		//Display menu and display schedule	
+		do
+		{
+			displayMenu();
+			choice = input.nextInt();
 			
-			for(int row = 0; row < numEmployees; row++){
-				for(int col = 0; col < DAYS - 1; col++){
-					if(schedule[row][col] != null && schedule[row][col + 1] != null){
-						if(schedule[row][col].startTime < schedule[row][col + 1].startTime){
-							temp[row][col] = schedule[row][col];
-							schedule[row][col] = schedule[row][col + 1];
-							schedule[row][col + 1] = temp[row][col];
-							
-							tmp[0] = schedule[row][col].employee;
-							tmp[1] = schedule[row][col].position;
-							tmp[2] = schedule[row][col].startTime;
-							tmp[3] = schedule[row][col].endTime;
-							
-							schedule[row][col].employee = schedule[row][col + 1].employee;
-							schedule[row][col].position = schedule[row][col + 1].position;
-							schedule[row][col].startTime = schedule[row][col + 1].startTime;
-							schedule[row][col].endTime = schedule[row][col + 1].endTime;							
-							
-							schedule[row][col + 1].employee = tmp[0];
-							schedule[row][col + 1].position = tmp[1];
-							schedule[row][col + 1].startTime = tmp[2];
-							schedule[row][col + 1].endTime = tmp[3];							
-							
-							swapped = true;
-						}
-					}
-				}
-			}				
-		}while(swapped);	*/		
+			//Validate choice
+			while(choice < 0 || choice > 7)
+			{
+				System.err.println("\nError! Invalid input.");
+				displayMenu();
+				choice = input.nextInt();
+			}
+			
+			switch(choice)
+			{
+			case 1:
+				day = "Sunday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 2:
+				day = "Monday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 3:
+				day = "Tuesday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 4:
+				day = "Wednesday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 5:
+				day = "Thursday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 6:
+				day = "Friday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			case 7:
+				day = "Saturday";
+				System.out.println("\nSchedule for " + day + ":\n");
+				displayShifts(day, schedule, numEmployees, DAYS, false);
+				break;
+			default:
+				break;
+			}
+			
+		}while(choice != 0);
+		
+		/*System.out.println("UNSORTED SCHEDULE:\n");		
+		
+		displayShifts("Sunday", schedule, numEmployees, DAYS, false);		
+		
+		System.out.println("********************************");*/
+		
+		/*
+		 * I could implement a way to replace every null instance in the schedule array
+		 * with a value that would not be possible in the 24 hour clock system and would also
+		 * be large enough to be pushed to the end of the array (push all null elements to the 
+		 * end of the array) during the sorting process and finally just implement an if 
+		 * statement that would prevent displaying elements with a start time of that large value...
+		 * */
+			
+		//Sort the schedule in chronological order
+		
 		
 		// Print out all shifts that are parsed by the program and sorted in chronological order
-		/*for(int x = 0; x < numEmployees; x++){
-			for(int y = 0; y < DAYS; y++){
-				if(schedule[x][y] != null){
-					System.out.println(schedule[x][y]);					
-				}
-			}
-		}	*/
+		/*System.out.println("SORTED SCHEDULE:\n");
+		displayShifts("Sunday", schedule, numEmployees, DAYS, false);*/
 		
 		// Print out all shifts that are parsed by the program (initial method)
 		/*for (Shift[] shiftRow : schedule)
@@ -187,28 +191,131 @@ public class Main {
 					System.out.println(shift);*/
 	}
 	
-	//Get time in standard format and convert it to military time for efficiency
-	public static int convertToMilitary(String standardTime){
+	public static void displayMenu()
+	{
+		System.out.println("\n\t\tHOME");
+		System.out.println("-----------------------------------------");
+		System.out.println("Please choose a day to print:\n");
+		System.out.println("1) Sunday");
+		System.out.println("2) Monday");
+		System.out.println("3) Tuesday");
+		System.out.println("4) Wednesday");
+		System.out.println("5) Thursday");
+		System.out.println("6) Friday");
+		System.out.println("7) Saturday");
+		System.out.println("0) Exit\n");
+		System.out.print(">> ");
+	}
+	
+	//Chronologically sorting Shift[][] 
+	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
+	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days){
+		
+		Shift temp = new Shift();
+		
+		//Have to make sure to only compare elements that have the same day and
+		//position
+		
+		//numEmployees represents rows, days represents columns
+		for(int a = 0; a < numEmployees; a++)
+		{
+			for(int b = 0; b < days; b++)
+			{
+				for(int c = 0; c < numEmployees; c++)
+				{
+					for(int d = 0; d < days; d++)
+					{
+						//If schedule is not null and day and position are same as next element
+						//Else if null, set military time to 2400 to push to end of sorted array
+						if(unsortedSchedule[c][d] != null && unsortedSchedule[a][b] != null)
+						{
+							if(getMilitaryTime(unsortedSchedule[c][d].startTime) > getMilitaryTime(
+									unsortedSchedule[a][b].startTime))
+							{
+								temp = unsortedSchedule[a][b];
+								unsortedSchedule[a][b] = unsortedSchedule[c][d];
+								unsortedSchedule[c][d] = temp;
+							}
+						}
+						else
+						{
+							//Push all null elements to the end of the array for correct days(might be unnecessary)							
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	//Need to figure out a way to print only the date and position specified...
+	public static void displayShifts(String date, Shift[][] myArray, int rows,
+			int cols, boolean printNull)
+	{
+		for(int x = 0; x < rows; x++)
+		{
+			for(int y = 0; y < cols; y++)
+			{
+				if(printNull == false)
+				{
+					if(myArray[x][y] != null && myArray[x][y].getDate() == date)
+					{						
+						System.out.println(myArray[x][y]);
+					}					
+				}
+				else
+				{
+					System.out.println(myArray[x][y] + "\n");					
+				}				
+			}			
+		}
+	}
+	
+	//Get time in standard format and convert it to military time for comparison purposes
+	public static int getMilitaryTime(String standardTime){
 		int militaryTime = 0;		
-		String[] tmp = standardTime.split(":");
+		String[] tmp;
 		boolean pastNoon = false;
 		
-		if(standardTime.contains("p")){
-			pastNoon = true;
-		}
-		
-		tmp[1] = tmp[1].replaceAll("[^\\d.]", "");
-		
-		try {
-			militaryTime = Integer.parseInt(tmp[0] + tmp[1]);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
-		
-		if(pastNoon){
-			return militaryTime + 1200;
-		}else{
+		if(standardTime == "2400")
+		{
+			try
+			{
+				militaryTime = Integer.parseInt(standardTime);
+			}
+			catch(NumberFormatException e)
+			{
+				e.printStackTrace();
+			}
 			return militaryTime;
+		}
+		else
+		{
+			 tmp = standardTime.split(":");
+			 
+			 if(standardTime.contains("p"))
+			 {
+				pastNoon = true;
+			 }
+				
+			tmp[1] = tmp[1].replaceAll("[^\\d.]", "");
+			
+			try 
+			{
+				militaryTime = Integer.parseInt(tmp[0] + tmp[1]);
+			} 
+			catch (NumberFormatException e) 
+			{
+				e.printStackTrace();
+			}
+			
+			if(pastNoon && militaryTime != 1200)
+			{
+				return militaryTime + 1200;
+			}
+			else
+			{
+				return militaryTime;
+			}
 		}
 	}
 
