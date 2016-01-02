@@ -7,7 +7,7 @@
  *                                                               *
  * Copyright (C) 2015, Christian Alexander, Brett Allen          *
  *****************************************************************/
-//package
+package net.alexanderdev.csvparsing;
 
 /**
  * @author Christian Bryce Alexander and Brett Michael Allen
@@ -18,17 +18,61 @@ public class Shift {
 	public String position;
 	public String startTime;
 	public String endTime;
+	public String date;
+	
+	public Shift(){
+		employee = "";
+		position = "";
+		startTime = "";
+		endTime = "";
+		date = "";
+	}
 
-	public Shift(String employee, String position, String startTime, String endTime) {
+	public Shift(String employee, String position, String startTime, String endTime, int day) {
 		this.employee = employee.trim();
 		this.position = position.trim();
 		this.startTime = startTime.trim();
 		this.endTime = endTime.trim();
+		
+		switch(day){
+		case 0:
+			date = "Sunday";
+			break;
+		case 1:
+			date = "Monday";
+			break;
+		case 2:
+			date = "Tuesday";
+			break;
+		case 3:
+			date = "Wednesday";
+			break;
+		case 4:
+			date = "Thursday";
+			break;
+		case 5:
+			date = "Friday";
+			break;
+		case 6:
+			date = "Saturday";
+		default:
+			break;
+		}
+	}
+	
+	public String getDate()
+	{
+		return date;
+	}
+	
+	public String getPosition()
+	{
+		return position;
 	}
 
 	@Override
 	public String toString() {
-		return "Employee: " + employee + "\nPosition: " + position + 
+		return "Employee: " + employee + "\nPosition: " + position + "\nDay: " + date + 
 				"\nTime: " + startTime + " - " + endTime + "\n";
 	}
 }
