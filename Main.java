@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -26,20 +27,22 @@ import java.util.Scanner;
 public class Main 
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
-	public static final int DAYS = 7;
-	public static final String TEST = "/Test Schedule for Brett.csv";
-	public static final String PATH = "/FLS Wall Schedule.csv";
+	public static final int DAYS = 7;	
+	public static final String PATH = "/wall schedule.csv";
 
 	public static void main(String[] args) {
 		Shift[][] schedule;		
-		String[] csv = readFile(TEST);
+		String[] csv = readFile(PATH);
 		String day = "";
 		Scanner input = new Scanner(System.in);
 
 		int startCol = 0;
 		int numEmployees = 0;
 		int e = -1;
-		int choice = -1;
+		int choice = -1;	
+		
+		//Used for input validation
+		char invalidChoice = ' ';
 
 		// Search where the dates column starts for data parsing
 		for (String line : csv) {
@@ -60,6 +63,7 @@ public class Main
 		}
 		// End search
 
+		System.out.println("There are " + numEmployees + " employees in the schedule array");
 		schedule = new Shift[numEmployees][DAYS];		
 
 		// Parsing data
@@ -79,7 +83,7 @@ public class Main
 				String employee = lineA.substring(1, lineA.lastIndexOf("\""));
 
 				for (int j = startCol; j < startCol + 7; j++) {
-					String shiftPosition = lineA.split(",")[j + 1];
+					String shiftPosition = lineA.split(",")[j + 1];				
 
 					// skips empty fields
 					if (shiftPosition.equals("."))
@@ -106,18 +110,36 @@ public class Main
 		//Sort the schedule in chronological order to use for displaying
 		sortAscending(schedule, numEmployees, DAYS);
 		
+		displayTest(schedule, numEmployees, DAYS, false);
+		
 		//Display menu and display schedule	
 		do
 		{
 			displayMenu();
-			choice = input.nextInt();
+			try
+			{
+				choice = input.nextInt();
+				invalidChoice = ' ';
+			}
+			catch(InputMismatchException exception)
+			{
+				invalidChoice = input.next().charAt(0);				
+			}			
 			
 			//Validate choice
-			while(choice < 0 || choice > 7)
+			while(choice < 0 || choice > 7 || invalidChoice != ' ')
 			{
-				System.err.println("\nError! Invalid input.");
+				System.err.println("\nError! Invalid input.\n");
 				displayMenu();
-				choice = input.nextInt();
+				try
+				{
+					choice = input.nextInt();
+					invalidChoice = ' ';
+				}
+				catch(InputMismatchException exception)
+				{
+					invalidChoice = input.next().charAt(0);			
+				}
 			}
 			
 			switch(choice)
@@ -125,64 +147,43 @@ public class Main
 			case 1:
 				day = "Sunday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 2:
 				day = "Monday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 3:
 				day = "Tuesday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 4:
 				day = "Wednesday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 5:
 				day = "Thursday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 6:
 				day = "Friday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 7:
 				day = "Saturday";
 				System.out.println("\nSchedule for " + day + ":\n");
-				displayShifts(day, schedule, numEmployees, DAYS, false);
+				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			default:
 				break;
 			}
 			
 		}while(choice != 0);
-		
-		/*System.out.println("UNSORTED SCHEDULE:\n");		
-		
-		displayShifts("Sunday", schedule, numEmployees, DAYS, false);		
-		
-		System.out.println("********************************");*/
-		
-		/*
-		 * I could implement a way to replace every null instance in the schedule array
-		 * with a value that would not be possible in the 24 hour clock system and would also
-		 * be large enough to be pushed to the end of the array (push all null elements to the 
-		 * end of the array) during the sorting process and finally just implement an if 
-		 * statement that would prevent displaying elements with a start time of that large value...
-		 * */
-			
-		//Sort the schedule in chronological order
-		
-		
-		// Print out all shifts that are parsed by the program and sorted in chronological order
-		/*System.out.println("SORTED SCHEDULE:\n");
-		displayShifts("Sunday", schedule, numEmployees, DAYS, false);*/
 		
 		// Print out all shifts that are parsed by the program (initial method)
 		/*for (Shift[] shiftRow : schedule)
@@ -193,8 +194,8 @@ public class Main
 	
 	public static void displayMenu()
 	{
-		System.out.println("\n\t\tHOME");
-		System.out.println("-----------------------------------------");
+		/*System.out.println("\n\t\tHOME");
+		System.out.println("-----------------------------------------");*/
 		System.out.println("Please choose a day to print:\n");
 		System.out.println("1) Sunday");
 		System.out.println("2) Monday");
@@ -205,7 +206,7 @@ public class Main
 		System.out.println("7) Saturday");
 		System.out.println("0) Exit\n");
 		System.out.print(">> ");
-	}
+	}	
 	
 	//Chronologically sorting Shift[][] 
 	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
@@ -247,17 +248,34 @@ public class Main
 		}
 	}
 	
-	//Need to figure out a way to print only the date and position specified...
-	public static void displayShifts(String date, Shift[][] myArray, int rows,
-			int cols, boolean printNull)
+	//Method that calls the displayShifts method using the positions included in wall schedule
+	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
 	{
+		displayShifts("Front Line Supv", day, myArray, rows, cols);
+		displayShifts("Selfcheck Attendant", day, myArray, rows, cols);
+		displayShifts("Member Services", day, myArray, rows, cols);
+		displayShifts("Front Door", day, myArray, rows, cols);
+		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
+		displayShifts("Recovery", day, myArray, rows, cols);
+		displayShifts("Food", day, myArray, rows, cols);
+		displayShifts("Tire", day, myArray, rows, cols);
+		displayShifts("Maintenance", day, myArray, rows, cols);
+		displayShifts("Deli", day, myArray, rows, cols);
+		displayShifts("Bakery", day, myArray, rows, cols);
+		displayShifts("Office", day, myArray, rows, cols);
+		displayShifts("Meat", day, myArray, rows, cols);
+		displayShifts("Produce", day, myArray, rows, cols);
+	}
+	
+	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
+	{		
 		for(int x = 0; x < rows; x++)
 		{
 			for(int y = 0; y < cols; y++)
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null && myArray[x][y].getDate() == date)
+					if(myArray[x][y] != null)
 					{						
 						System.out.println(myArray[x][y]);
 					}					
@@ -266,6 +284,23 @@ public class Main
 				{
 					System.out.println(myArray[x][y] + "\n");					
 				}				
+			}			
+		}
+	}
+	
+	//Need to figure out a way to print only the date and position specified...
+	public static void displayShifts(String position, String date, Shift[][] myArray, int rows,
+			int cols)
+	{
+		for(int x = 0; x < rows; x++)
+		{
+			for(int y = 0; y < cols; y++)
+			{
+				if(myArray[x][y] != null && myArray[x][y].getDate() == date
+						&& myArray[x][y].getPosition().contains(position))
+				{						
+					System.out.println(myArray[x][y]);
+				}			
 			}			
 		}
 	}
@@ -332,7 +367,8 @@ public class Main
 		return false;
 	}
 
-	public static int indexOf(String[] tokens, String find) {
+	public static int indexOf(String[] tokens, String find) 
+	{
 		for (int i = 0; i < tokens.length; i++)
 			if (tokens[i].contains(find))
 				return i;
