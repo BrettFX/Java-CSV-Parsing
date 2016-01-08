@@ -127,8 +127,8 @@ public class Main
 					// skips invalid start and end times (or vacations, unpaid days off)					
 					if (!startsWithNumber(shiftTime))
 					{
-						/*System.out.println(employee + "\'s shift did not start with a number!");
-						System.out.println("The attempted shift time was: " + shiftTime);*/
+						System.err.println("\n" + employee + "\'s shift did not originally start with a number!\n");
+						System.err.println("The attempted shift time was: " + shiftTime + "\n");
 						
 						/*Try to go to the next row in the .csv file and if there are shift times
 						process those shift times for the employee that would've been skipped.
@@ -137,10 +137,12 @@ public class Main
 						//Set the the row controlling variable to the next line in the .csv file
 						//and try to get a shift time
 						
-						iOffset = i + 1;						
+						iOffset = i + 1;
+						lineA = csv[iOffset];
 						lineB = csv[iOffset + 1];
 						
 						shiftTime = lineB.split(",")[j];
+						shiftPosition = lineA.split(",")[j];						
 						
 						//Now if the shiftTime is still not a number skip that employee
 						if(!startsWithNumber(shiftTime))
@@ -158,7 +160,7 @@ public class Main
 						}	*/	
 					}
 					
-					//System.out.println("2nd:" + employee + " - " + shiftPosition);
+					System.out.println(employee + " - " + shiftPosition);
 
 					// creates new shift
 					Shift shift;
