@@ -27,31 +27,44 @@ import java.util.Scanner;
 public class Main 
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
-	public static final int DAYS = 7;	
+	public static final int DAYS = 7;
+	
+	public static final String TEST1 = "/Test Schedule for Brett.csv";
+	public static final String TEST2 = "/FLS Wall Schedule.csv";
 	public static final String PATH = "/wall schedule.csv";
 
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		Shift[][] schedule;		
-		String[] csv = readFile(PATH);
+		String[] csv = readFile(TEST2);
 		String day = "";
 		Scanner input = new Scanner(System.in);
 
 		int startCol = 0;
 		int numEmployees = 0;
 		int e = -1;
-		int choice = -1;	
+		int choice = -1;
+		
+		int iOffset = 0,
+			jOffset = 0;
 		
 		//Used for input validation
 		char invalidChoice = ' ';
+		
+		//Used to handle discrepancies in input file
+		boolean outlier = false;
 
 		// Search where the dates column starts for data parsing
-		for (String line : csv) {
-			if (line.contains(DATES)) {
+		for (String line : csv) 
+		{
+			if (line.contains(DATES)) 
+			{
 				String[] tokens = line.split(",");
 
 				startCol = indexOf(tokens, "Sun");
 
-				if (startCol == -1) {
+				if (startCol == -1) 
+				{
 					System.err.println("Sunday not found!");
 					System.exit(-1);
 				}
@@ -63,16 +76,21 @@ public class Main
 		}
 		// End search
 
-		System.out.println("There are " + numEmployees + " employees in the schedule array");
+		System.out.print("There are ");
+		System.err.print(numEmployees + " employees ");
+		System.out.println("in this file\n");
+		
 		schedule = new Shift[numEmployees][DAYS];		
 
 		// Parsing data
-		for (int i = 0; i < csv.length; i++) {
+		for (int i = 0; i < csv.length; i++) 
+		{
 			// Line that contains position for each day
 			String lineA = csv[i];
 
 			// Line that starts with an employee's name (names are surrounded in "")
-			if (lineA.startsWith("\"")) {
+			if (lineA.startsWith("\"")) 
+			{
 				// Current row in schedule
 				e++;
 
@@ -82,26 +100,75 @@ public class Main
 				// gets employee name
 				String employee = lineA.substring(1, lineA.lastIndexOf("\""));
 
-				for (int j = startCol; j < startCol + 7; j++) {
-					String shiftPosition = lineA.split(",")[j + 1];				
+				for (int j = startCol; j < startCol + 7; j++) 
+				{
+					String shiftPosition = lineA.split(",")[j + 1];
 
 					// skips empty fields
 					if (shiftPosition.equals("."))
-						continue;
-
+					{
+						continue;					
+					}
+					
 					String shiftTime = lineB.split(",")[j];
+					
+					//System.out.println("1st:" + employee + " - " + shiftPosition);
+					
+					/*If shiftTime doesn't start with a number and the current employee has
+					NOT be assigned a shift time then go to the next row in the .csv file
+					and get the the shift time for that employee. Otherwise, continue
+					
+					DO NOT GO TO THE NEXT ROW IN THE SCHEDULE ARRAY IF AN EMPLOYEE'S SHIFT
+					TIME HAS NOT BEEN DETERMINED
+					*/
 
-					// skips invalid start and end times (or vacations, unpaid
-					// days off)
+					// skips invalid start and end times (or vacations, unpaid days off)					
 					if (!startsWithNumber(shiftTime))
-						continue;
+					{
+						/*System.out.println(employee + "\'s shift did not start with a number!");
+						System.out.println("The attempted shift time was: " + shiftTime);*/
+						
+						/*Try to go to the next row in the .csv file and if there are shift times
+						process those shift times for the employee that would've been skipped.
+						Else skip and continue because that means the employee is off that day.*/
+						
+						//Set the the row controlling variable to the next line in the .csv file
+						//and try to get a shift time
+						
+						iOffset = i + 1;						
+						lineB = csv[iOffset + 1];
+						
+						shiftTime = lineB.split(",")[j];
+						
+						//Now if the shiftTime is still not a number skip that employee
+						if(!startsWithNumber(shiftTime))
+						{							
+							continue;
+						}
+						
+						//shiftTime = lineA.split(",")[offset];
+						
+						//System.out.println(employee + " - " + shiftTime);
+						
+						/*if(!startsWithNumber(shiftTime))
+						{
+							continue;
+						}	*/	
+					}
+					
+					//System.out.println("2nd:" + employee + " - " + shiftPosition);
 
 					// creates new shift
-					Shift shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0],
-							shiftTime.split("-")[1], j - 2);
-
+					Shift shift;
+					
+					shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
+							j - 2);
+					
 					// assigns new shift
 					schedule[e][j - startCol] = shift;
+					
+					/*System.out.println(schedule[e][j - startCol].employee + 
+							" - " + schedule[e][j - startCol].position);*/
 				}
 			}
 		}
@@ -110,7 +177,7 @@ public class Main
 		//Sort the schedule in chronological order to use for displaying
 		sortAscending(schedule, numEmployees, DAYS);
 		
-		displayTest(schedule, numEmployees, DAYS, false);
+		//displayTest(schedule, numEmployees, DAYS, false);
 		
 		//Display menu and display schedule	
 		do
@@ -210,7 +277,8 @@ public class Main
 	
 	//Chronologically sorting Shift[][] 
 	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
-	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days){
+	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days)
+	{
 		
 		Shift temp = new Shift();
 		
@@ -275,7 +343,7 @@ public class Main
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null)
+					if(myArray[x][y] != null && myArray[x][y].position.contains("Office"))
 					{						
 						System.out.println(myArray[x][y]);
 					}					
@@ -296,8 +364,8 @@ public class Main
 		{
 			for(int y = 0; y < cols; y++)
 			{
-				if(myArray[x][y] != null && myArray[x][y].getDate() == date
-						&& myArray[x][y].getPosition().contains(position))
+				if(myArray[x][y] != null && myArray[x][y].date == date
+						&& myArray[x][y].position.contains(position))
 				{						
 					System.out.println(myArray[x][y]);
 				}			
@@ -306,7 +374,8 @@ public class Main
 	}
 	
 	//Get time in standard format and convert it to military time for comparison purposes
-	public static int getMilitaryTime(String standardTime){
+	public static int getMilitaryTime(String standardTime)
+	{
 		int militaryTime = 0;		
 		String[] tmp;
 		boolean pastNoon = false;
@@ -355,15 +424,16 @@ public class Main
 	}
 
 	//Searching for shift times
-	public static boolean startsWithNumber(String shiftTime) {
-		String[] nums = {
+	public static boolean startsWithNumber(String shiftTime) 
+	{
+		String[] nums = 
+		{
 			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
 		};
 
 		for (String num : nums)
 			if (shiftTime.startsWith(num))
 				return true;
-
 		return false;
 	}
 
@@ -375,7 +445,8 @@ public class Main
 		return -1;
 	}
 
-	public static String[] readFile(String path) {
+	public static String[] readFile(String path) 
+	{
 		ArrayList<String> lines = new ArrayList<>();
 
 		InputStream inStream = Main.class.getResourceAsStream(path);
@@ -384,16 +455,25 @@ public class Main
 
 		String line;
 
-		try {
-			while ((line = reader.readLine()) != null) {
+		try 
+		{
+			while ((line = reader.readLine()) != null) 
+			{
 				lines.add(line);
 			}
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
-		} finally {
-			try {
+		} 
+		finally 
+		{
+			try 
+			{
 				reader.close();
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 			}
 		}
@@ -401,22 +481,32 @@ public class Main
 		return lines.toArray(new String[lines.size()]);
 	}
 
-	public static void writeFile(String path, String[] lines) {
+	public static void writeFile(String path, String[] lines) 
+	{
 		BufferedWriter writer = null;
 
-		try {
+		try 
+		{
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
 
-			for (String line : lines) {
+			for (String line : lines) 
+			{
 				writer.write(line);
 				writer.newLine();
 			}
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
-		} finally {
-			try {
+		} 
+		finally 
+		{
+			try 
+			{
 				writer.close();
-			} catch (Exception e) {
+			} 
+			catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 		}
