@@ -39,6 +39,8 @@ public class Main
 		String[] csv = readFile(TEST2);
 		String day = "";
 		Scanner input = new Scanner(System.in);
+		
+		String employee = "", shiftPosition = "", shiftTime = "", lineA = "",  lineB = "";
 
 		int startCol = 0;
 		int numEmployees = 0;
@@ -86,7 +88,7 @@ public class Main
 		for (int i = 0; i < csv.length; i++) 
 		{
 			// Line that contains position for each day
-			String lineA = csv[i];
+			lineA = csv[i];
 
 			// Line that starts with an employee's name (names are surrounded in "")
 			if (lineA.startsWith("\"")) 
@@ -95,14 +97,14 @@ public class Main
 				e++;
 
 				// Line that contains start and end times
-				String lineB = csv[i + 1];
+				lineB = csv[i + 1];
 
 				// gets employee name
-				String employee = lineA.substring(1, lineA.lastIndexOf("\""));
+				employee = lineA.substring(1, lineA.lastIndexOf("\""));
 
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
-					String shiftPosition = lineA.split(",")[j + 1];
+					shiftPosition = lineA.split(",")[j + 1];
 
 					// skips empty fields
 					if (shiftPosition.equals("."))
@@ -110,7 +112,7 @@ public class Main
 						continue;					
 					}
 					
-					String shiftTime = lineB.split(",")[j];
+					shiftTime = lineB.split(",")[j];
 					
 					//System.out.println("1st:" + employee + " - " + shiftPosition);
 					
