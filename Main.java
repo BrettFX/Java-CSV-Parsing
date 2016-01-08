@@ -38,6 +38,8 @@ public class Main
 		Shift[][] schedule;		
 		String[] csv = readFile(TEST2);
 		String day = "";
+		
+		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
 		
 		String employee = "", shiftPosition = "", shiftTime = "", lineA = "",  lineB = "";
@@ -47,8 +49,7 @@ public class Main
 		int e = -1;
 		int choice = -1;
 		
-		int iOffset = 0,
-			jOffset = 0;
+		int iOffset = 0;
 		
 		//Used for input validation
 		char invalidChoice = ' ';
@@ -105,7 +106,7 @@ public class Main
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
 					shiftPosition = lineA.split(",")[j + 1];
-
+					
 					// skips empty fields
 					if (shiftPosition.equals("."))
 					{
@@ -127,8 +128,8 @@ public class Main
 					// skips invalid start and end times (or vacations, unpaid days off)					
 					if (!startsWithNumber(shiftTime))
 					{
-						System.err.println("\n" + employee + "\'s shift did not originally start with a number!\n");
-						System.err.println("The attempted shift time was: " + shiftTime + "\n");
+						/*System.err.println("\n" + employee + "\'s shift did not originally start with a number!\n");
+						System.err.println("The attempted shift time was: " + shiftTime + "\n");*/
 						
 						/*Try to go to the next row in the .csv file and if there are shift times
 						process those shift times for the employee that would've been skipped.
@@ -141,12 +142,12 @@ public class Main
 						lineA = csv[iOffset];
 						lineB = csv[iOffset + 1];
 						
-						shiftTime = lineB.split(",")[j];
 						shiftPosition = lineA.split(",")[j];						
+						shiftTime = lineB.split(",")[j];
 						
 						//Now if the shiftTime is still not a number skip that employee
 						if(!startsWithNumber(shiftTime))
-						{							
+						{	
 							continue;
 						}
 						
@@ -160,9 +161,9 @@ public class Main
 						}	*/	
 					}
 					
-					System.out.println(employee + " - " + shiftPosition);
+					//System.out.println(employee + " - " + shiftPosition);
 
-					// creates new shift
+					// Creates new shift
 					Shift shift;
 					
 					shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
@@ -172,7 +173,8 @@ public class Main
 					schedule[e][j - startCol] = shift;
 					
 					/*System.out.println(schedule[e][j - startCol].employee + 
-							" - " + schedule[e][j - startCol].position);*/
+							" - " + schedule[e][j - startCol].position + " - " + 
+							schedule[e][j - startCol].date);*/
 				}
 			}
 		}
