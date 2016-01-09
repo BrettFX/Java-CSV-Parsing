@@ -115,12 +115,25 @@ public class Main
 					// skips empty fields
 					if (shiftPosition.equals("."))
 					{
-						continue;					
+						if(csv[i + 1].split(",")[j].equals("."))
+							continue;
+						
+						shiftPosition = csv[i + 1].split(",")[j];
+						
+						if(shiftPosition.equals("."))
+							System.err.println(employee + " - " + shiftPosition);
+						
+						/*if(employee.contains("Onico"))
+							System.err.println("Skipped " + (j - 2) + ": " + employee + " - " +
+									shiftPosition + ": " + shiftTime + "\n");
+						continue;	*/				
 					}
 					
 					shiftTime = lineB.split(",")[j];
 					
-					//System.out.println("1st:" + employee + " - " + shiftPosition);
+					/*if(employee.contains("Onico"))
+						System.out.println("1st " + (j - 2) + ": " + employee + " - " +
+								shiftPosition + ": " + shiftTime + "\n");*/
 					
 					/*If shiftTime doesn't start with a number and the current employee has
 					NOT be assigned a shift time then go to the next row in the .csv file
@@ -144,15 +157,18 @@ public class Main
 						//and try to get a shift time
 						
 						iOffset = i + 1;
-						lineA = csv[iOffset];
+						//lineA = csv[iOffset];
 						lineB = csv[iOffset + 1];
 						
-						shiftPosition = lineA.split(",")[j];						
+						//shiftPosition = lineA.split(",")[j + 1];						
 						shiftTime = lineB.split(",")[j];
 						
 						//Now if the shiftTime is still not a number skip that employee
 						if(!startsWithNumber(shiftTime))
 						{	
+							/*if(employee.contains("Onico"))
+								System.err.println("Skipped " + (j - 2) + ": " + employee + " - " +
+										shiftPosition + ": " + shiftTime + "\n");*/
 							continue;
 						}
 						
@@ -166,7 +182,9 @@ public class Main
 						}	*/	
 					}
 					
-					System.out.println(employee + " - " + shiftPosition);
+					/*if(employee.contains("Onico"))
+						System.out.println("2nd " + (j - 2) + ": " + employee + " - " +
+								shiftPosition + ": " + shiftTime + "\n");*/
 
 					// Creates new shift
 					Shift shift;
@@ -186,9 +204,9 @@ public class Main
 		//End parsing
 		
 		//Sort the schedule in chronological order to use for displaying
-		sortAscending(schedule, numEmployees, DAYS);
+		//sortAscending(schedule, numEmployees, DAYS);
 		
-		//displayTest(schedule, numEmployees, DAYS, false);
+		displayTest(schedule, numEmployees, DAYS, false);
 		
 		//Display menu and display schedule	
 		do
@@ -354,7 +372,7 @@ public class Main
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null && myArray[x][y].position.contains("Office"))
+					if(myArray[x][y] != null)
 					{						
 						System.out.println(myArray[x][y]);
 					}					
