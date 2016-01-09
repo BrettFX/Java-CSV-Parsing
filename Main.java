@@ -37,12 +37,17 @@ public class Main
 	{
 		Shift[][] schedule;		
 		String[] csv = readFile(TEST2);
+		String[] csvOffset = csv.clone();
 		String day = "";
 		
 		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
 		
-		String employee = "", shiftPosition = "", shiftTime = "", lineA = "",  lineB = "";
+		String employee = "",
+				shiftPosition = "",
+				shiftTime = "",
+				lineA = "",
+				lineB = "";
 
 		int startCol = 0;
 		int numEmployees = 0;
@@ -161,7 +166,7 @@ public class Main
 						}	*/	
 					}
 					
-					//System.out.println(employee + " - " + shiftPosition);
+					System.out.println(employee + " - " + shiftPosition);
 
 					// Creates new shift
 					Shift shift;
