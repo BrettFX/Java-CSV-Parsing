@@ -110,7 +110,7 @@ public class Main
 					
 					//Determine if the initial field is blank then determine the next field
 					//below that one. If both fields are blank then skip that employee
-					if (shiftPosition.equals("."))
+					if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
 					{
 						if(csv[i + 1].split(",")[j].equals("."))
 							continue;
@@ -151,7 +151,7 @@ public class Main
 		//End parsing
 		
 		//Sort the schedule in chronological order to use for displaying
-		//sortAscending(schedule, numEmployees, DAYS);
+		sortAscending(schedule, numEmployees, DAYS);
 		
 		//displayTest(schedule, numEmployees, DAYS, false);
 		
