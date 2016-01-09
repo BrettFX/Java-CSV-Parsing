@@ -36,8 +36,7 @@ public class Main
 	public static void main(String[] args) 
 	{
 		Shift[][] schedule;		
-		String[] csv = readFile(TEST2);
-		String[] csvOffset = csv.clone();
+		String[] csv = readFile(TEST2);		
 		String day = "";
 		
 		@SuppressWarnings("resource")
@@ -59,9 +58,6 @@ public class Main
 		//Used for input validation
 		char invalidChoice = ' ';
 		
-		//Used to handle discrepancies in input file
-		boolean outlier = false;
-
 		// Search where the dates column starts for data parsing
 		for (String line : csv) 
 		{
@@ -105,14 +101,15 @@ public class Main
 				// Line that contains start and end times
 				lineB = csv[i + 1];
 
-				// gets employee name
+				// Gets employee name
 				employee = lineA.substring(1, lineA.lastIndexOf("\""));
 
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
 					shiftPosition = lineA.split(",")[j + 1];
 					
-					// skips empty fields
+					//Determine if the initial field is blank then determine the next field
+					//below that one. If both fields are blank then skip that employee
 					if (shiftPosition.equals("."))
 					{
 						if(csv[i + 1].split(",")[j].equals("."))
@@ -121,83 +118,33 @@ public class Main
 						shiftPosition = csv[i + 1].split(",")[j];
 						
 						if(shiftPosition.equals("."))
-							System.err.println(employee + " - " + shiftPosition);
-						
-						/*if(employee.contains("Onico"))
-							System.err.println("Skipped " + (j - 2) + ": " + employee + " - " +
-									shiftPosition + ": " + shiftTime + "\n");
-						continue;	*/				
+							System.err.println(employee + " - " + shiftPosition);			
 					}
 					
 					shiftTime = lineB.split(",")[j];
-					
-					/*if(employee.contains("Onico"))
-						System.out.println("1st " + (j - 2) + ": " + employee + " - " +
-								shiftPosition + ": " + shiftTime + "\n");*/
-					
-					/*If shiftTime doesn't start with a number and the current employee has
-					NOT be assigned a shift time then go to the next row in the .csv file
-					and get the the shift time for that employee. Otherwise, continue
-					
-					DO NOT GO TO THE NEXT ROW IN THE SCHEDULE ARRAY IF AN EMPLOYEE'S SHIFT
-					TIME HAS NOT BEEN DETERMINED
-					*/
 
-					// skips invalid start and end times (or vacations, unpaid days off)					
+					//Skips start and end times (vacations, unpaid days off) if both
+					//the initial field and field below are invalid
 					if (!startsWithNumber(shiftTime))
-					{
-						/*System.err.println("\n" + employee + "\'s shift did not originally start with a number!\n");
-						System.err.println("The attempted shift time was: " + shiftTime + "\n");*/
-						
-						/*Try to go to the next row in the .csv file and if there are shift times
-						process those shift times for the employee that would've been skipped.
-						Else skip and continue because that means the employee is off that day.*/
-						
-						//Set the the row controlling variable to the next line in the .csv file
-						//and try to get a shift time
-						
-						iOffset = i + 1;
-						//lineA = csv[iOffset];
+					{	
+						iOffset = i + 1;						
 						lineB = csv[iOffset + 1];
-						
-						//shiftPosition = lineA.split(",")[j + 1];						
+												
 						shiftTime = lineB.split(",")[j];
 						
-						//Now if the shiftTime is still not a number skip that employee
+						//If the shiftTime is still not a number skip that employee
 						if(!startsWithNumber(shiftTime))
-						{	
-							/*if(employee.contains("Onico"))
-								System.err.println("Skipped " + (j - 2) + ": " + employee + " - " +
-										shiftPosition + ": " + shiftTime + "\n");*/
 							continue;
-						}
-						
-						//shiftTime = lineA.split(",")[offset];
-						
-						//System.out.println(employee + " - " + shiftTime);
-						
-						/*if(!startsWithNumber(shiftTime))
-						{
-							continue;
-						}	*/	
-					}
-					
-					/*if(employee.contains("Onico"))
-						System.out.println("2nd " + (j - 2) + ": " + employee + " - " +
-								shiftPosition + ": " + shiftTime + "\n");*/
+					}					
 
-					// Creates new shift
+					// Create new shift
 					Shift shift;
 					
 					shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
 							j - 2);
 					
-					// assigns new shift
+					//Assign new shift
 					schedule[e][j - startCol] = shift;
-					
-					/*System.out.println(schedule[e][j - startCol].employee + 
-							" - " + schedule[e][j - startCol].position + " - " + 
-							schedule[e][j - startCol].date);*/
 				}
 			}
 		}
@@ -206,7 +153,7 @@ public class Main
 		//Sort the schedule in chronological order to use for displaying
 		//sortAscending(schedule, numEmployees, DAYS);
 		
-		displayTest(schedule, numEmployees, DAYS, false);
+		//displayTest(schedule, numEmployees, DAYS, false);
 		
 		//Display menu and display schedule	
 		do
