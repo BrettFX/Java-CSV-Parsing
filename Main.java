@@ -62,6 +62,8 @@ public class Main
 		//Used for input validation
 		char invalidChoice = ' ';
 		
+		boolean multiplier;
+		
 		// Search where the dates column starts for data parsing
 		for (String line : csv) 
 		{
@@ -110,6 +112,8 @@ public class Main
 
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
+					multiplier = false;
+					
 					shiftPosition = lineA.split(",")[j + 1];		
 					
 					//If shiftPosition is blank Or the cell directly below it contains a shiftPosition
@@ -122,19 +126,6 @@ public class Main
 							continue;
 						
 						shiftPosition = csv[i + 1].split(",")[j];
-						
-						/*if(employee.contains("Sanchez"))
-						{
-							if(!csv[i + 4].split(",")[j].equals(".") &&
-									!startsWithNumber(csv[i + 4].split(",")[j]))
-							{
-								
-								//shiftPosition2 = csv[i + 4].split(",")[j];
-								
-								if(employee.contains("Sanchez"))
-									System.err.println(csv[i + 4].split(",")[j]);
-							}	
-						}	*/			
 					}
 					
 					shiftTime = lineB.split(",")[j];
@@ -164,17 +155,52 @@ public class Main
 						break;
 					}
 					
-					//Assign new shift
+					//Assign new shift1
 					schedule[e][j - startCol] = shift1;
+					
+					//Determine if the there is a second portion of the current employee's shift
+					try
+					{
+						if(!csv[i + 4].split(",")[j].equals(".") &&
+								!startsWithNumber(csv[i + 4].split(",")[j]))
+						{
+							multiplier = true;
+							
+							shiftPosition2 = csv[i + 4].split(",")[j];
+							shiftTime2 = csv[i + 5].split(",")[j];
+						}
+						
+						if(multiplier)
+						{
+							try 
+							{	
+								shift2 = new Shift(employee, shiftPosition2, shiftTime2.split("-")[0],
+										shiftTime2.split("-")[1],
+											j - 2);
+								
+								multiShifts.add(shift2);
+							} 
+							catch (ArrayIndexOutOfBoundsException e1) 
+							{
+								continue;
+							}
+						}
+					}
+					catch(ArrayIndexOutOfBoundsException e1)
+					{
+						continue;
+					}
 				}
 			}
 		}
 		//End parsing
 		
-		//Sort the schedule in chronological order to use for displaying
-		//sortAscending(schedule, numEmployees, DAYS);
+		combine(schedule, numEmployees, DAYS, multiShifts);
 		
-		displayTest(schedule, numEmployees, DAYS, false);
+		//Sort the schedule in chronological order to use for displaying
+		sortAscending(schedule, numEmployees, DAYS);
+		
+		//displayTest(schedule, numEmployees, DAYS, false);
 		
 		//Display menu and display schedule	
 		do
@@ -266,6 +292,27 @@ public class Main
 		System.out.print(">> ");
 	}	
 	
+	public static void combine(Shift[][] myArray1, int rows, int cols, ArrayList<Shift> myArray2)
+	{
+		int i = 0;
+		
+		//Traverse myArray1 and replace all null elements with an element of myArray2
+		for(int x = 0; x < rows; x++)
+		{
+			for(int y = 0; y < cols; y++)
+			{
+				if(myArray1[x][y] == null)
+				{
+					if(i < myArray2.size())
+					{
+						myArray1[x][y] = myArray2.get(i);
+						i++;
+					}
+				}
+			}
+		}
+	}
+	
 	//Chronologically sorting Shift[][] 
 	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
 	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days)
@@ -304,18 +351,31 @@ public class Main
 	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
 	{
 		displayShifts("Front Line Supv", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Selfcheck Attendant", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Member Services", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Front Door", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Recovery", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Food", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Tire", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Maintenance", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Deli", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Bakery", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Office", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Meat", day, myArray, rows, cols);
+		System.out.println("************************************");
 		displayShifts("Produce", day, myArray, rows, cols);
 	}
 	
@@ -405,13 +465,23 @@ public class Main
 				e.printStackTrace();
 			}
 			
-			if(pastNoon && militaryTime != 1200)
+			if(pastNoon)
 			{
-				return militaryTime + 1200;
+				if(militaryTime < 1200)
+					return militaryTime + 1200;
+				else
+					return militaryTime;
+				/*if(militaryTime >= 1200)
+					return militaryTime;
+				else
+					return militaryTime + 1200;*/
 			}
 			else
 			{
-				return militaryTime;
+				if(militaryTime < 1200)
+					return militaryTime;
+				else
+					return militaryTime - 1200;
 			}
 		}
 	}
