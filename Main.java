@@ -34,9 +34,9 @@ public class Main
 	public static final String PATH = "/wall schedule.csv";
 
 	public static void main(String[] args) 
-	{
+	{	
 		Shift[][] schedule;		
-		String[] csv = readFile(TEST2);		
+		String[] csv = readFile(PATH);		
 		String day = "";
 		
 		@SuppressWarnings("resource")
@@ -48,12 +48,11 @@ public class Main
 				lineA = "",
 				lineB = "";
 
-		int startCol = 0;
-		int numEmployees = 0;
-		int e = -1;
-		int choice = -1;
-		
-		int iOffset = 0;
+		int startCol = 0, 
+				numEmployees = 0, 
+				e = -1, 
+				choice = -1,
+				iOffset = 0;
 		
 		//Used for input validation
 		char invalidChoice = ' ';
@@ -106,7 +105,7 @@ public class Main
 
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
-					shiftPosition = lineA.split(",")[j + 1];
+					shiftPosition = lineA.split(",")[j + 1];					
 					
 					//Determine if the initial field is blank then determine the next field
 					//below that one. If both fields are blank then skip that employee
@@ -140,8 +139,15 @@ public class Main
 					// Create new shift
 					Shift shift;
 					
-					shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
-							j - 2);
+					try 
+					{
+						shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
+								j - 2);
+					} 
+					catch (ArrayIndexOutOfBoundsException e1) 
+					{
+						break;
+					}
 					
 					//Assign new shift
 					schedule[e][j - startCol] = shift;
@@ -227,12 +233,6 @@ public class Main
 			}
 			
 		}while(choice != 0);
-		
-		// Print out all shifts that are parsed by the program (initial method)
-		/*for (Shift[] shiftRow : schedule)
-			for (Shift shift : shiftRow)
-				if(shift != null)
-					System.out.println(shift);*/
 	}
 	
 	public static void displayMenu()
@@ -254,12 +254,8 @@ public class Main
 	//Chronologically sorting Shift[][] 
 	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
 	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days)
-	{
-		
+	{		
 		Shift temp = new Shift();
-		
-		//Have to make sure to only compare elements that have the same day and
-		//position
 		
 		//numEmployees represents rows, days represents columns
 		for(int a = 0; a < numEmployees; a++)
@@ -270,8 +266,9 @@ public class Main
 				{
 					for(int d = 0; d < days; d++)
 					{
-						//If schedule is not null and day and position are same as next element
-						//Else if null, set military time to 2400 to push to end of sorted array
+						/*If schedule is not null and military time of the initial element is
+						greater than military time of current element then swap the current element
+						and	initial element*/
 						if(unsortedSchedule[c][d] != null && unsortedSchedule[a][b] != null)
 						{
 							if(getMilitaryTime(unsortedSchedule[c][d].startTime) > getMilitaryTime(
@@ -281,10 +278,6 @@ public class Main
 								unsortedSchedule[a][b] = unsortedSchedule[c][d];
 								unsortedSchedule[c][d] = temp;
 							}
-						}
-						else
-						{
-							//Push all null elements to the end of the array for correct days(might be unnecessary)							
 						}
 					}
 				}
@@ -332,7 +325,7 @@ public class Main
 		}
 	}
 	
-	//Need to figure out a way to print only the date and position specified...
+	//Need to figure out a way to prevent printing duplicate shifts
 	public static void displayShifts(String position, String date, Shift[][] myArray, int rows,
 			int cols)
 	{
