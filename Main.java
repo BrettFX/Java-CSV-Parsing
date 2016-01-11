@@ -36,7 +36,8 @@ public class Main
 	public static void main(String[] args) 
 	{	
 		Shift[][] schedule;		
-		Shift shift;
+		Shift shift1;
+		Shift shift2;
 		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
 		String[] csv = readFile(PATH);		
 		String day = "";
@@ -155,7 +156,7 @@ public class Main
 					//Create new shift
 					try 
 					{	
-						shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
+						shift1 = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
 									j - 2);
 					} 
 					catch (ArrayIndexOutOfBoundsException e1) 
@@ -164,7 +165,7 @@ public class Main
 					}
 					
 					//Assign new shift
-					schedule[e][j - startCol] = shift;
+					schedule[e][j - startCol] = shift1;
 				}
 			}
 		}
