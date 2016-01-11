@@ -36,6 +36,8 @@ public class Main
 	public static void main(String[] args) 
 	{	
 		Shift[][] schedule;		
+		Shift shift;
+		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
 		String[] csv = readFile(PATH);		
 		String day = "";
 		
@@ -44,7 +46,9 @@ public class Main
 		
 		String employee = "",
 				shiftPosition = "",
+				shiftPosition2 = "",
 				shiftTime = "",
+				shiftTime2 = "",
 				lineA = "",
 				lineB = "";
 
@@ -105,19 +109,31 @@ public class Main
 
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
-					shiftPosition = lineA.split(",")[j + 1];					
+					shiftPosition = lineA.split(",")[j + 1];		
 					
-					//Determine if the initial field is blank then determine the next field
-					//below that one. If both fields are blank then skip that employee
+					//If shiftPosition is blank Or the cell directly below it contains a shiftPosition
+					//process that employee
 					if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
 					{
+						//If the cell directly below the initial set shiftPosition is also blank 
+						//skip that employee
 						if(csv[i + 1].split(",")[j].equals("."))
 							continue;
 						
 						shiftPosition = csv[i + 1].split(",")[j];
 						
-						if(shiftPosition.equals("."))
-							System.err.println(employee + " - " + shiftPosition);			
+						/*if(employee.contains("Sanchez"))
+						{
+							if(!csv[i + 4].split(",")[j].equals(".") &&
+									!startsWithNumber(csv[i + 4].split(",")[j]))
+							{
+								
+								//shiftPosition2 = csv[i + 4].split(",")[j];
+								
+								if(employee.contains("Sanchez"))
+									System.err.println(csv[i + 4].split(",")[j]);
+							}	
+						}	*/			
 					}
 					
 					shiftTime = lineB.split(",")[j];
@@ -134,15 +150,13 @@ public class Main
 						//If the shiftTime is still not a number skip that employee
 						if(!startsWithNumber(shiftTime))
 							continue;
-					}					
-
-					// Create new shift
-					Shift shift;
+					}
 					
+					//Create new shift
 					try 
-					{
+					{	
 						shift = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
-								j - 2);
+									j - 2);
 					} 
 					catch (ArrayIndexOutOfBoundsException e1) 
 					{
@@ -157,9 +171,9 @@ public class Main
 		//End parsing
 		
 		//Sort the schedule in chronological order to use for displaying
-		sortAscending(schedule, numEmployees, DAYS);
+		//sortAscending(schedule, numEmployees, DAYS);
 		
-		//displayTest(schedule, numEmployees, DAYS, false);
+		displayTest(schedule, numEmployees, DAYS, false);
 		
 		//Display menu and display schedule	
 		do
@@ -305,17 +319,23 @@ public class Main
 	}
 	
 	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
-	{		
+	{	
+		int numNull = 0;
+		
 		for(int x = 0; x < rows; x++)
 		{
 			for(int y = 0; y < cols; y++)
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null)
+					if(myArray[x][y] != null && myArray[x][y].employee.contains("Sanchez"))
 					{						
 						System.out.println(myArray[x][y]);
-					}					
+					}	
+					else
+					{
+						numNull++;
+					}
 				}
 				else
 				{
@@ -323,9 +343,12 @@ public class Main
 				}				
 			}			
 		}
+		
+		System.out.print("There were ");
+		System.err.println(numNull + " null shifts\n");
 	}
 	
-	//Need to figure out a way to prevent printing duplicate shifts
+	//Need to figure out a way to prevent printing duplicate shifts here
 	public static void displayShifts(String position, String date, Shift[][] myArray, int rows,
 			int cols)
 	{
