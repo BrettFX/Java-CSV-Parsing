@@ -195,6 +195,7 @@ public class Main
 		}
 		//End parsing
 		
+		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
 		
 		//Sort the schedule in chronological order to use for displaying
@@ -219,7 +220,8 @@ public class Main
 			//Validate choice
 			while(choice < 0 || choice > 7 || invalidChoice != ' ')
 			{
-				System.err.println("\nError! Invalid input.\n");
+				System.err.println("\nError! Invalid input.");
+				System.err.println("Enter a number 1 - 7\n");
 				displayMenu();
 				try
 				{
@@ -280,7 +282,7 @@ public class Main
 	{
 		/*System.out.println("\n\t\tHOME");
 		System.out.println("-----------------------------------------");*/
-		System.out.println("Please choose a day to print:\n");
+		System.out.println("Please choose a day to print (1 - 7):\n");
 		System.out.println("1) Sunday");
 		System.out.println("2) Monday");
 		System.out.println("3) Tuesday");
@@ -350,32 +352,46 @@ public class Main
 	//Method that calls the displayShifts method using the positions included in wall schedule
 	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
 	{
+		System.out.println("***********FRONT LINE SUPV**********");
 		displayShifts("Front Line Supv", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********SELF CHECK-OUT**********");
 		displayShifts("Selfcheck Attendant", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********MEMBER SERVICES**********");
 		displayShifts("Member Services", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********FRONT DOOR**********");
 		displayShifts("Front Door", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********CARTS**********");
 		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********RECOVERY**********");
 		displayShifts("Recovery", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********FOOD COURT**********");
 		displayShifts("Food", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********TIRE BAY**********");
 		displayShifts("Tire", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********MAINTENANCE**********");
 		displayShifts("Maintenance", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********DELI**********");
 		displayShifts("Deli", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********BAKERY**********");
 		displayShifts("Bakery", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********CASH OFFICE**********");
 		displayShifts("Office", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********MEAT**********");
 		displayShifts("Meat", day, myArray, rows, cols);
-		System.out.println("************************************");
+		
+		System.out.println("***********PRODUCE**********");
 		displayShifts("Produce", day, myArray, rows, cols);
 	}
 	
