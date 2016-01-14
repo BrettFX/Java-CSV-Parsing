@@ -24,6 +24,7 @@ import java.util.Scanner;
  * @author Christian Bryce Alexander and Brett Michael Allen
  * @since Oct 22, 2015, 1:13:31 PM
  */
+
 public class Main 
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
@@ -198,10 +199,24 @@ public class Main
 		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
 		
+		//Test remove duplicates method here
+		//removeDuplicates(schedule, numEmployees, DAYS);
+		
+		//displayTest(schedule, numEmployees, DAYS, false);
+		
 		//Sort the schedule in chronological order to use for displaying
 		sortAscending(schedule, numEmployees, DAYS);
 		
-		//displayTest(schedule, numEmployees, DAYS, false);
+		//Test remove duplicates method here
+		removeDuplicates(schedule, numEmployees, DAYS);
+		
+		//displayTest(schedule, numEmployees, DAYS, false);		
+		//System.out.println("****************************");
+		
+		/*System.out.println(schedule[31][4]);
+		System.out.println(schedule[30][6]);*/
+		
+		
 		
 		//Display menu and display schedule	
 		do
@@ -315,32 +330,73 @@ public class Main
 		}
 	}
 	
+	public static void removeDuplicates(Shift[][] myArray, int rows, int cols)
+	{
+		for(int a = 0; a < rows; a++)
+		{
+			for(int b = 0; b < cols; b++)
+			{			
+				for(int c = 0; c < rows; c++)
+				{
+					for(int d = 0; d < cols; d++)
+					{
+						if ((a == c) && (b == d)) 
+						{
+							if ((a + 1) < cols) 
+							{
+								if (myArray[c][a + 1] != null && myArray[a][b] != null) {
+									if (myArray[c][a + 1].date.equals(myArray[a][b].date)
+											&& myArray[c][a + 1].employee.contains(myArray[a][b].employee)
+											&& myArray[c][a + 1].startTime.contains(myArray[a][b].startTime)) {
+										System.err.println(myArray[c][a + 1]);
+										myArray[c][a + 1] = null;
+									}
+								} 
+							} 
+						} 
+						else
+						{
+							if (myArray[c][d] != null && myArray[a][b] != null) {
+								if (myArray[c][d].date.equals(myArray[a][b].date)
+										&& myArray[c][d].employee.contains(myArray[a][b].employee)
+										&& myArray[c][d].startTime.contains(myArray[a][b].startTime)) {
+									System.err.println(myArray[c][d]);
+									myArray[c][d] = null;
+								}
+							} 
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	//Chronologically sorting Shift[][] 
 	//Sorting algorithm: Ascending (least to greatest)(earliest to latest)
-	public static void sortAscending(Shift[][] unsortedSchedule, int numEmployees, int days)
+	public static void sortAscending(Shift[][] myArray, int rows, int cols)
 	{		
 		Shift temp = new Shift();
 		
 		//numEmployees represents rows, days represents columns
-		for(int a = 0; a < numEmployees; a++)
+		for(int a = 0; a < rows; a++)
 		{
-			for(int b = 0; b < days; b++)
+			for(int b = 0; b < cols; b++)
 			{
-				for(int c = 0; c < numEmployees; c++)
+				for(int c = 0; c < rows; c++)
 				{
-					for(int d = 0; d < days; d++)
+					for(int d = 0; d < cols; d++)
 					{
 						/*If schedule is not null and military time of the initial element is
 						greater than military time of current element then swap the current element
 						and	initial element*/
-						if(unsortedSchedule[c][d] != null && unsortedSchedule[a][b] != null)
+						if(myArray[c][d] != null && myArray[a][b] != null)
 						{
-							if(getMilitaryTime(unsortedSchedule[c][d].startTime) > getMilitaryTime(
-									unsortedSchedule[a][b].startTime))
+							if(getMilitaryTime(myArray[c][d].startTime) > getMilitaryTime(
+									myArray[a][b].startTime))
 							{
-								temp = unsortedSchedule[a][b];
-								unsortedSchedule[a][b] = unsortedSchedule[c][d];
-								unsortedSchedule[c][d] = temp;
+								temp = myArray[a][b];
+								myArray[a][b] = myArray[c][d];
+								myArray[c][d] = temp;
 							}
 						}
 					}
@@ -348,6 +404,8 @@ public class Main
 			}
 		}
 	}
+	
+	//Remove duplicates method here
 	
 	//Method that calls the displayShifts method using the positions included in wall schedule
 	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
@@ -405,8 +463,9 @@ public class Main
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null && myArray[x][y].employee.contains("Sanchez"))
+					if(myArray[x][y] != null)
 					{						
+						System.out.println("@[" + x + "][" + y + "]");
 						System.out.println(myArray[x][y]);
 					}	
 					else
