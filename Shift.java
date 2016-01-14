@@ -13,14 +13,17 @@ package net.alexanderdev.csvparsing;
  * @author Christian Bryce Alexander and Brett Michael Allen
  * @since Oct 22, 2015, 1:44:50 PM
  */
-public class Shift {
+
+public class Shift 
+{	
 	public String employee;
 	public String position;
 	public String startTime;
-	public String endTime;
+	public String endTime;		
 	public String date;
 	
-	public Shift(){
+	public Shift()
+	{
 		employee = "";
 		position = "";
 		startTime = "";
@@ -28,13 +31,15 @@ public class Shift {
 		date = "";
 	}
 
-	public Shift(String employee, String position, String startTime, String endTime, int day) {
+	public Shift(String employee, String position, String startTime, String endTime, int day) 
+	{
 		this.employee = employee.trim();
 		this.position = position.trim();
 		this.startTime = startTime.trim();
 		this.endTime = endTime.trim();
 		
-		switch(day){
+		switch(day)
+		{
 		case 0:
 			date = "Sunday";
 			break;
@@ -59,20 +64,11 @@ public class Shift {
 			break;
 		}
 	}
-	
-	public String getDate()
-	{
-		return date;
-	}
-	
-	public String getPosition()
-	{
-		return position;
-	}
 
 	@Override
-	public String toString() {
-		return "Employee: " + employee + "\nPosition: " + position + "\nDay: " + date + 
+	public String toString() 
+	{
+		return "Day: " + date + "\nEmployee: " + employee + "\nPosition: " + position + 
 				"\nTime: " + startTime + " - " + endTime + "\n";
 	}
 }
