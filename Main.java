@@ -121,7 +121,7 @@ public class Main
 					//process that employee
 					if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
 					{
-						//If the cell directly below the initial set shiftPosition is also blank 
+						//If the cell directly below the initially set shiftPosition is also blank 
 						//skip that employee
 						if(csv[i + 1].split(",")[j].equals("."))
 							continue;
@@ -199,24 +199,11 @@ public class Main
 		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
 		
-		//Test remove duplicates method here
-		//removeDuplicates(schedule, numEmployees, DAYS);
-		
-		//displayTest(schedule, numEmployees, DAYS, false);
-		
 		//Sort the schedule in chronological order to use for displaying
 		sortAscending(schedule, numEmployees, DAYS);
 		
 		//Test remove duplicates method here
 		removeDuplicates(schedule, numEmployees, DAYS);
-		
-		//displayTest(schedule, numEmployees, DAYS, false);		
-		//System.out.println("****************************");
-		
-		/*System.out.println(schedule[31][4]);
-		System.out.println(schedule[30][6]);*/
-		
-		
 		
 		//Display menu and display schedule	
 		do
@@ -253,37 +240,37 @@ public class Main
 			{
 			case 1:
 				day = "Sunday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 2:
 				day = "Monday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 3:
 				day = "Tuesday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 4:
 				day = "Wednesday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 5:
 				day = "Thursday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 6:
 				day = "Friday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			case 7:
 				day = "Saturday";
-				System.out.println("\nSchedule for " + day + ":\n");
+				System.out.println("\n" + day.toUpperCase() + ":");
 				displayWallSchedule(day, schedule, numEmployees, DAYS);
 				break;
 			default:
@@ -330,6 +317,7 @@ public class Main
 		}
 	}
 	
+	//Traverse schedule and remove all duplicates
 	public static void removeDuplicates(Shift[][] myArray, int rows, int cols)
 	{
 		for(int a = 0; a < rows; a++)
@@ -340,28 +328,31 @@ public class Main
 				{
 					for(int d = 0; d < cols; d++)
 					{
+						//If not the same element at the same location
 						if ((a == c) && (b == d)) 
 						{
 							if ((a + 1) < cols) 
 							{
+								//Only proceed if testing myArray[0][0]
 								if (myArray[c][a + 1] != null && myArray[a][b] != null) {
 									if (myArray[c][a + 1].date.equals(myArray[a][b].date)
-											&& myArray[c][a + 1].employee.contains(myArray[a][b].employee)
-											&& myArray[c][a + 1].startTime.contains(myArray[a][b].startTime)) {
-										System.err.println(myArray[c][a + 1]);
-										myArray[c][a + 1] = null;
+											&& myArray[c][a + 1].position.contains(myArray[a][b].position)											
+											&& myArray[c][a + 1].employee.contains(myArray[a][b].employee)) 
+									{	
+										myArray[a][b] = null;
 									}
 								} 
 							} 
 						} 
+						//Otherwise include cols at 0
 						else
 						{
 							if (myArray[c][d] != null && myArray[a][b] != null) {
 								if (myArray[c][d].date.equals(myArray[a][b].date)
-										&& myArray[c][d].employee.contains(myArray[a][b].employee)
-										&& myArray[c][d].startTime.contains(myArray[a][b].startTime)) {
-									System.err.println(myArray[c][d]);
-									myArray[c][d] = null;
+										&& myArray[c][d].position.contains(myArray[a][b].position)										
+										&& myArray[c][d].employee.contains(myArray[a][b].employee)) 
+								{	
+									myArray[a][b] = null;
 								}
 							} 
 						}
@@ -410,47 +401,49 @@ public class Main
 	//Method that calls the displayShifts method using the positions included in wall schedule
 	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
 	{
-		System.out.println("***********FRONT LINE SUPV**********");
+		System.out.println("\n***********FRONT LINE SUPV**********");
 		displayShifts("Front Line Supv", day, myArray, rows, cols);
 		
-		System.out.println("***********SELF CHECK-OUT**********");
+		System.out.println("\n***********SELF CHECK-OUT**********");
 		displayShifts("Selfcheck Attendant", day, myArray, rows, cols);
 		
-		System.out.println("***********MEMBER SERVICES**********");
+		System.out.println("\n***********MEMBER SERVICES**********");
 		displayShifts("Member Services", day, myArray, rows, cols);
 		
-		System.out.println("***********FRONT DOOR**********");
+		System.out.println("\n***********FRONT DOOR**********");
 		displayShifts("Front Door", day, myArray, rows, cols);
 		
-		System.out.println("***********CARTS**********");
+		System.out.println("\n***********CARTS**********");
 		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
 		
-		System.out.println("***********RECOVERY**********");
+		System.out.println("\n***********RECOVERY**********");
 		displayShifts("Recovery", day, myArray, rows, cols);
 		
-		System.out.println("***********FOOD COURT**********");
+		System.out.println("\n***********FOOD COURT**********");
 		displayShifts("Food", day, myArray, rows, cols);
 		
-		System.out.println("***********TIRE BAY**********");
+		System.out.println("\n***********TIRE BAY**********");
 		displayShifts("Tire", day, myArray, rows, cols);
 		
-		System.out.println("***********MAINTENANCE**********");
+		System.out.println("\n***********MAINTENANCE**********");
 		displayShifts("Maintenance", day, myArray, rows, cols);
 		
-		System.out.println("***********DELI**********");
+		System.out.println("\n***********DELI**********");
 		displayShifts("Deli", day, myArray, rows, cols);
 		
-		System.out.println("***********BAKERY**********");
+		System.out.println("\n***********BAKERY**********");
 		displayShifts("Bakery", day, myArray, rows, cols);
 		
-		System.out.println("***********CASH OFFICE**********");
+		System.out.println("\n***********CASH OFFICE**********");
 		displayShifts("Office", day, myArray, rows, cols);
 		
-		System.out.println("***********MEAT**********");
+		System.out.println("\n***********MEAT**********");
 		displayShifts("Meat", day, myArray, rows, cols);
 		
-		System.out.println("***********PRODUCE**********");
+		System.out.println("\n***********PRODUCE**********");
 		displayShifts("Produce", day, myArray, rows, cols);
+		
+		System.out.println();
 	}
 	
 	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
