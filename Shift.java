@@ -68,7 +68,9 @@ public class Shift
 	@Override
 	public String toString() 
 	{
-		return "Day: " + date + "\nEmployee: " + employee + "\nPosition: " + position + 
-				"\nTime: " + startTime + " - " + endTime + "\n";
+		return "\n" + employee.split(",")[1].trim() + ": " +	startTime + " - " + endTime;
+		
+		/*return "Day: " + date + "\nEmployee: " + employee + "\nPosition: " + position + 
+				"\nTime: " + startTime + " - " + endTime + "\n";*/
 	}
 }
