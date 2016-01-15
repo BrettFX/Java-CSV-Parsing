@@ -86,10 +86,6 @@ public class Main
 			}
 		}
 		// End search
-
-		System.out.print("There are ");
-		System.err.print(numEmployees + " employees ");
-		System.out.println("in this file\n");
 		
 		schedule = new Shift[numEmployees][DAYS];		
 
@@ -163,7 +159,8 @@ public class Main
 					try
 					{
 						if(!csv[i + 4].split(",")[j].equals(".") &&
-								!startsWithNumber(csv[i + 4].split(",")[j]))
+								!startsWithNumber(csv[i + 4].split(",")[j]) &&
+								!csv[i + 4].startsWith("\""))
 						{
 							multiplier = true;
 							
@@ -202,7 +199,7 @@ public class Main
 		//Sort the schedule in chronological order to use for displaying
 		sortAscending(schedule, numEmployees, DAYS);
 		
-		//Test remove duplicates method here
+		//Remove all duplicate shifts from schedule array
 		removeDuplicates(schedule, numEmployees, DAYS);
 		
 		//Display menu and display schedule	
@@ -339,7 +336,8 @@ public class Main
 											&& myArray[c][a + 1].position.contains(myArray[a][b].position)											
 											&& myArray[c][a + 1].employee.contains(myArray[a][b].employee)) 
 									{	
-										myArray[a][b] = null;
+										myArray[c][a + 1] = null;
+										//myArray[a][b] = null;
 									}
 								} 
 							} 
@@ -352,7 +350,8 @@ public class Main
 										&& myArray[c][d].position.contains(myArray[a][b].position)										
 										&& myArray[c][d].employee.contains(myArray[a][b].employee)) 
 								{	
-									myArray[a][b] = null;
+									myArray[c][d] = null;
+									//myArray[a][b] = null;
 								}
 							} 
 						}
@@ -413,13 +412,13 @@ public class Main
 		System.out.println("\n***********FRONT DOOR**********");
 		displayShifts("Front Door", day, myArray, rows, cols);
 		
-		System.out.println("\n***********CARTS**********");
+		System.out.println("\n***********CARTS************");
 		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
 		
 		System.out.println("\n***********RECOVERY**********");
 		displayShifts("Recovery", day, myArray, rows, cols);
 		
-		System.out.println("\n***********FOOD COURT**********");
+		System.out.println("\n***********FOOD COURT***********");
 		displayShifts("Food", day, myArray, rows, cols);
 		
 		System.out.println("\n***********TIRE BAY**********");
@@ -443,7 +442,19 @@ public class Main
 		System.out.println("\n***********PRODUCE**********");
 		displayShifts("Produce", day, myArray, rows, cols);
 		
-		System.out.println();
+		System.out.println("\n****************************************************");
+		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
+		System.out.println("****************************************************\n");
+	}
+	
+	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols)
+	{
+		System.out.println("\n*********CASHIER SCHEDULE**********");
+		displayShifts("Cashier", day, myArray, rows, cols);
+		
+		System.out.println("\n****************************************************");
+		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
+		System.out.println("****************************************************\n");
 	}
 	
 	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
