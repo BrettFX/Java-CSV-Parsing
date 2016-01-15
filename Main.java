@@ -11,7 +11,10 @@ package net.alexanderdev.csvparsing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +22,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 
 /**
  * @author Christian Bryce Alexander and Brett Michael Allen
@@ -40,30 +45,84 @@ public class Main
 		Shift shift1;
 		Shift shift2;
 		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
-		String[] csv = readFile(PATH);		
-		String day = "";
 		
 		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
 		
+		//Delegate file chooser to specification file (class)
+		JButton open = new JButton();
+		JFileChooser myPath = new JFileChooser();
+		
+		
+		//Use this path if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
+		myPath.setCurrentDirectory(new File("C:/"));
+		myPath.setDialogTitle("Choose file (.csv)");
+		
+		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}		
+		//End chooser
+		
 		String employee = "",
+				day = "",
 				shiftPosition = "",
 				shiftPosition2 = "",
 				shiftTime = "",
 				shiftTime2 = "",
 				lineA = "",
-				lineB = "";
+				lineB = "",
+				lines = null,
+				fileName = myPath.getSelectedFile().getAbsolutePath();
 
 		int startCol = 0, 
 				numEmployees = 0, 
 				e = -1, 
 				choice = -1,
-				iOffset = 0;
+				iOffset = 0,
+				count = 0;
 		
 		//Used for input validation
 		char invalidChoice = ' ';
 		
 		boolean multiplier;
+		
+		ArrayList<String> chosenFile = new ArrayList<String>();
+		
+		//Temp code
+        try 
+        {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = new FileReader(fileName);
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = 
+                new BufferedReader(fileReader);
+
+            while((lines = bufferedReader.readLine()) != null) 
+            {
+                //System.out.println(lines);
+                //csv[count] = lines;
+                chosenFile.add(lines);
+                count++;
+            }   
+
+            // Always close files.
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex) 
+        {
+            System.err.println("Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex) 
+        {
+            System.err.println("Error reading file '" + fileName + "'");                  
+            // Or we could just do this: 
+            // ex.printStackTrace();
+        }    
+		//End temp code
+        
+        //Test method
+		//String[] csv = readFile(PATH);
+        
+        String[] csv = chosenFile.toArray(new String[chosenFile.size()]);
 		
 		// Search where the dates column starts for data parsing
 		for (String line : csv) 
@@ -540,7 +599,8 @@ public class Main
 			for(int y = 0; y < cols; y++)
 			{
 				if(myArray[x][y] != null && myArray[x][y].date == date
-						&& myArray[x][y].position.contains(position))
+						&& myArray[x][y].position.contains(position)
+						&& getMilitaryTime(myArray[x][y].endTime) > 900)
 				{						
 					System.out.println(myArray[x][y]);
 					file.log(myArray[x][y].displayShift());
