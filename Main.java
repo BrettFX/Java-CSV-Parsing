@@ -34,7 +34,7 @@ public class Main
 	public static final String TEST2 = "/FLS Wall Schedule.csv";
 	public static final String PATH = "/wall schedule.csv";
 
-	public static void main(String[] args) 
+	public static void main(String[] args) throws IOException 
 	{	
 		Shift[][] schedule;		
 		Shift shift1;
@@ -237,38 +237,66 @@ public class Main
 			{
 			case 1:
 				day = "Sunday";
+				
+				Logger sunday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				sunday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, sunday);
 				break;
 			case 2:
 				day = "Monday";
+
+				Logger monday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				monday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, monday);
 				break;
 			case 3:
 				day = "Tuesday";
+
+				Logger tuesday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				tuesday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, tuesday);
 				break;
 			case 4:
 				day = "Wednesday";
+
+				Logger wednesday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				wednesday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, wednesday);
 				break;
 			case 5:
 				day = "Thursday";
+
+				Logger thursday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				thursday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, thursday);
 				break;
 			case 6:
 				day = "Friday";
+
+				Logger friday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				friday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, friday);
 				break;
 			case 7:
 				day = "Saturday";
+
+				Logger saturday = new Logger(day);
+				
 				System.out.println("\n" + day.toUpperCase() + ":");
-				displayWallSchedule(day, schedule, numEmployees, DAYS);
+				saturday.log("\n" + day.toUpperCase() + ":");
+				displayWallSchedule(day, schedule, numEmployees, DAYS, saturday);
 				break;
 			default:
 				break;
@@ -398,59 +426,74 @@ public class Main
 	//Remove duplicates method here
 	
 	//Method that calls the displayShifts method using the positions included in wall schedule
-	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols)
+	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols, Logger file) throws IOException
 	{
 		System.out.println("\n***********FRONT LINE SUPV**********");
-		displayShifts("Front Line Supv", day, myArray, rows, cols);
+		file.log("\n***********FRONT LINE SUPV**********");
+		displayShifts("Front Line Supv", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********SELF CHECK-OUT**********");
-		displayShifts("Selfcheck Attendant", day, myArray, rows, cols);
+		file.log("\n***********SELF CHECK-OUT**********");
+		displayShifts("Selfcheck Attendant", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********MEMBER SERVICES**********");
-		displayShifts("Member Services", day, myArray, rows, cols);
+		file.log("\n***********MEMBER SERVICES**********");
+		displayShifts("Member Services", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********FRONT DOOR**********");
-		displayShifts("Front Door", day, myArray, rows, cols);
+		file.log("\n***********FRONT DOOR**********");
+		displayShifts("Front Door", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********CARTS************");
-		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols);
+		file.log("\n***********CARTS************");
+		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********RECOVERY**********");
-		displayShifts("Recovery", day, myArray, rows, cols);
+		file.log("\n***********RECOVERY**********");
+		displayShifts("Recovery", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********FOOD COURT***********");
-		displayShifts("Food", day, myArray, rows, cols);
+		file.log("\n***********FOOD COURT***********");
+		displayShifts("Food", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********TIRE BAY**********");
-		displayShifts("Tire", day, myArray, rows, cols);
+		file.log("\n***********TIRE BAY**********");
+		displayShifts("Tire", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********MAINTENANCE**********");
-		displayShifts("Maintenance", day, myArray, rows, cols);
+		file.log("\n***********MAINTENANCE**********");
+		displayShifts("Maintenance", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********DELI**********");
-		displayShifts("Deli", day, myArray, rows, cols);
+		file.log("\n***********DELI**********");
+		displayShifts("Deli", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********BAKERY**********");
-		displayShifts("Bakery", day, myArray, rows, cols);
+		file.log("\n***********BAKERY**********");
+		displayShifts("Bakery", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********CASH OFFICE**********");
-		displayShifts("Office", day, myArray, rows, cols);
+		file.log("\n***********CASH OFFICE**********");
+		displayShifts("Office", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********MEAT**********");
-		displayShifts("Meat", day, myArray, rows, cols);
+		file.log("\n***********MEAT**********");
+		displayShifts("Meat", day, myArray, rows, cols, file);
 		
 		System.out.println("\n***********PRODUCE**********");
-		displayShifts("Produce", day, myArray, rows, cols);
+		file.log("\n***********PRODUCE**********");
+		displayShifts("Produce", day, myArray, rows, cols, file);
 		
 		System.out.println("\n****************************************************");
 		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
 		System.out.println("****************************************************\n");
 	}
 	
-	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols)
+	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols, Logger file) throws IOException
 	{
 		System.out.println("\n*********CASHIER SCHEDULE**********");
-		displayShifts("Cashier", day, myArray, rows, cols);
+		file.log("\n*********CASHIER SCHEDULE**********");
+		displayShifts("Cashier", day, myArray, rows, cols, file);
 		
 		System.out.println("\n****************************************************");
 		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
@@ -490,7 +533,7 @@ public class Main
 	
 	//Need to figure out a way to prevent printing duplicate shifts here
 	public static void displayShifts(String position, String date, Shift[][] myArray, int rows,
-			int cols)
+			int cols, Logger file) throws IOException
 	{
 		for(int x = 0; x < rows; x++)
 		{
@@ -500,6 +543,7 @@ public class Main
 						&& myArray[x][y].position.contains(position))
 				{						
 					System.out.println(myArray[x][y]);
+					file.log(myArray[x][y].displayShift());
 				}			
 			}			
 		}
