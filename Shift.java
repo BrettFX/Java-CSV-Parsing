@@ -64,6 +64,11 @@ public class Shift
 			break;
 		}
 	}
+	
+	public String displayShift()
+	{
+		return "\n" + employee.split(",")[1].trim() + ": " +	startTime + " - " + endTime;
+	}
 
 	@Override
 	public String toString() 
