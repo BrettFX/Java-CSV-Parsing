@@ -56,7 +56,8 @@ public class Main
 		
 		//Use this path if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
 		myPath.setCurrentDirectory(new File("C:/"));
-		myPath.setDialogTitle("Choose file (.csv)");
+		myPath.setDialogTitle("Open .csv");
+		
 		
 		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}		
 		//End chooser
@@ -546,6 +547,10 @@ public class Main
 		System.out.println("\n****************************************************");
 		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
 		System.out.println("****************************************************\n");
+		
+		file.log("\n****************************************************");
+		file.log("Copyright (C) 2016, Brett Allen");
+		file.log("****************************************************\n");
 	}
 	
 	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols, Logger file) throws IOException
@@ -557,6 +562,10 @@ public class Main
 		System.out.println("\n****************************************************");
 		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
 		System.out.println("****************************************************\n");
+		
+		file.log("\n****************************************************");
+		file.log("Copyright (C) 2016, Brett Allen");
+		file.log("****************************************************\n");
 	}
 	
 	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
