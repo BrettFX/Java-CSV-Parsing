@@ -20,7 +20,7 @@ public class Shift
 	public String position;
 	public String startTime;
 	public String endTime;		
-	public String date;
+	public String day;
 	
 	public Shift()
 	{
@@ -28,7 +28,7 @@ public class Shift
 		position = "";
 		startTime = "";
 		endTime = "";
-		date = "";
+		day = "";
 	}
 
 	public Shift(String employee, String position, String startTime, String endTime, int day) 
@@ -41,25 +41,25 @@ public class Shift
 		switch(day)
 		{
 		case 0:
-			date = "Sunday";
+			this.day = "Sunday";
 			break;
 		case 1:
-			date = "Monday";
+			this.day = "Monday";
 			break;
 		case 2:
-			date = "Tuesday";
+			this.day = "Tuesday";
 			break;
 		case 3:
-			date = "Wednesday";
+			this.day = "Wednesday";
 			break;
 		case 4:
-			date = "Thursday";
+			this.day = "Thursday";
 			break;
 		case 5:
-			date = "Friday";
+			this.day = "Friday";
 			break;
 		case 6:
-			date = "Saturday";
+			this.day = "Saturday";
 		default:
 			break;
 		}
