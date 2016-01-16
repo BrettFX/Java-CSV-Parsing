@@ -26,7 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 /**
- * @author Christian Bryce Alexander and Brett Michael Allen
+ * @author Brett Michael Allen and Christian Bryce Alexander
  * @since Oct 22, 2015, 1:13:31 PM
  */
 
@@ -44,7 +44,9 @@ public class Main
 		Shift[][] schedule;		
 		Shift shift1;
 		Shift shift2;
+		
 		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
+		ArrayList<String> truncDates = new ArrayList<String>();
 		
 		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
@@ -56,7 +58,7 @@ public class Main
 		
 		//Use this path if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
 		myPath.setCurrentDirectory(new File("C:/"));
-		myPath.setDialogTitle("Open .csv");
+		myPath.setDialogTitle("Open");
 		
 		
 		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}		
@@ -64,21 +66,26 @@ public class Main
 		
 		String employee = "",
 				day = "",
+				date = "",
 				shiftPosition = "",
 				shiftPosition2 = "",
 				shiftTime = "",
 				shiftTime2 = "",
 				lineA = "",
 				lineB = "",
-				lines = null,
+				lines = null,				
 				fileName = myPath.getSelectedFile().getAbsolutePath();
+		
+		String[] dates,
+					toks = new String[2];
 
 		int startCol = 0, 
-				numEmployees = 0, 
+				numEmployees = 0,
+				dayNum = 0,
 				e = -1, 
 				choice = -1,
 				iOffset = 0,
-				count = 0;
+				count = -1;				
 		
 		//Used for input validation
 		char invalidChoice = ' ';
@@ -102,7 +109,6 @@ public class Main
                 //System.out.println(lines);
                 //csv[count] = lines;
                 chosenFile.add(lines);
-                count++;
             }   
 
             // Always close files.
@@ -147,6 +153,8 @@ public class Main
 		}
 		// End search
 		
+		dates = csv[startCol + 3].split(",");
+		
 		schedule = new Shift[numEmployees][DAYS];		
 
 		// Parsing data
@@ -170,6 +178,17 @@ public class Main
 				for (int j = startCol; j < startCol + 7; j++) 
 				{
 					multiplier = false;
+					
+					dayNum = j - 2;
+					
+					count++;
+					if(count < dates.length)
+					{
+						if(startsWithNumber(dates[count]))
+						{
+							truncDates.add(dates[count]);
+						}
+					}
 					
 					shiftPosition = lineA.split(",")[j + 1];		
 					
@@ -205,7 +224,7 @@ public class Main
 					try 
 					{	
 						shift1 = new Shift(employee, shiftPosition, shiftTime.split("-")[0], shiftTime.split("-")[1],
-									j - 2);
+								dayNum);
 					} 
 					catch (ArrayIndexOutOfBoundsException e1) 
 					{
@@ -234,7 +253,7 @@ public class Main
 							{	
 								shift2 = new Shift(employee, shiftPosition2, shiftTime2.split("-")[0],
 										shiftTime2.split("-")[1],
-											j - 2);
+										dayNum);
 								
 								multiShifts.add(shift2);
 							} 
@@ -251,7 +270,7 @@ public class Main
 				}
 			}
 		}
-		//End parsing
+		//End parsing	
 		
 		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
@@ -298,64 +317,113 @@ public class Main
 			case 1:
 				day = "Sunday";
 				
-				Logger sunday = new Logger(day);
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				sunday.log("\n" + day.toUpperCase() + ":");
+				Logger sunday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				sunday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, sunday);
 				break;
 			case 2:
 				day = "Monday";
-
-				Logger monday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				monday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger monday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				monday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, monday);
 				break;
 			case 3:
 				day = "Tuesday";
-
-				Logger tuesday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				tuesday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger tuesday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				tuesday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, tuesday);
 				break;
 			case 4:
 				day = "Wednesday";
-
-				Logger wednesday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				wednesday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger wednesday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				wednesday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, wednesday);
 				break;
 			case 5:
 				day = "Thursday";
-
-				Logger thursday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				thursday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger thursday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				thursday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, thursday);
 				break;
 			case 6:
 				day = "Friday";
-
-				Logger friday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				friday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger friday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				friday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, friday);
 				break;
 			case 7:
 				day = "Saturday";
-
-				Logger saturday = new Logger(day);
 				
-				System.out.println("\n" + day.toUpperCase() + ":");
-				saturday.log("\n" + day.toUpperCase() + ":");
+				toks = truncDates.get(choice - 1).split("-");
+				date = toks[1].toUpperCase() + "-" + toks[0];
+
+				Logger saturday = new Logger(day, date);
+				
+				System.out.println("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
+				saturday.log("\n" + day.toUpperCase() + " " +
+						date + ":");
+				
 				displayWallSchedule(day, schedule, numEmployees, DAYS, saturday);
 				break;
 			default:
@@ -420,7 +488,7 @@ public class Main
 							{
 								//Only proceed if testing myArray[0][0]
 								if (myArray[c][a + 1] != null && myArray[a][b] != null) {
-									if (myArray[c][a + 1].date.equals(myArray[a][b].date)
+									if (myArray[c][a + 1].day.equals(myArray[a][b].day)
 											&& myArray[c][a + 1].position.contains(myArray[a][b].position)											
 											&& myArray[c][a + 1].employee.contains(myArray[a][b].employee)) 
 									{	
@@ -434,7 +502,7 @@ public class Main
 						else
 						{
 							if (myArray[c][d] != null && myArray[a][b] != null) {
-								if (myArray[c][d].date.equals(myArray[a][b].date)
+								if (myArray[c][d].day.equals(myArray[a][b].day)
 										&& myArray[c][d].position.contains(myArray[a][b].position)										
 										&& myArray[c][d].employee.contains(myArray[a][b].employee)) 
 								{	
@@ -600,14 +668,14 @@ public class Main
 	}
 	
 	//Need to figure out a way to prevent printing duplicate shifts here
-	public static void displayShifts(String position, String date, Shift[][] myArray, int rows,
+	public static void displayShifts(String position, String day, Shift[][] myArray, int rows,
 			int cols, Logger file) throws IOException
 	{
 		for(int x = 0; x < rows; x++)
 		{
 			for(int y = 0; y < cols; y++)
 			{
-				if(myArray[x][y] != null && myArray[x][y].date == date
+				if(myArray[x][y] != null && myArray[x][y].day == day
 						&& myArray[x][y].position.contains(position)
 						&& getMilitaryTime(myArray[x][y].endTime) > 900)
 				{						
