@@ -56,7 +56,8 @@ public class Main
 		JFileChooser myPath = new JFileChooser();
 		
 		
-		//Use this path if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
+		//Use these paths if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
+		//									  "C:/Users/Brett/Documents/BJs Wholesale Club/Schedules"
 		myPath.setCurrentDirectory(new File("C:/Users/Brett/Documents/BJs Wholesale Club/Schedules/01-16-16"));
 		myPath.setDialogTitle("Open");
 		
@@ -184,9 +185,9 @@ public class Main
 						{
 							truncDates.add(dates[count]);
 						}
-					}
+					}	
 					
-					shiftPosition = lineA.split(",")[j + 1];		
+					shiftPosition = lineA.split(",")[j + 1];
 					
 					//If shiftPosition is blank Or the cell directly below it contains a shiftPosition
 					//process that employee
@@ -194,8 +195,10 @@ public class Main
 					{
 						//If the cell directly below the initially set shiftPosition is also blank 
 						//skip that employee
-						if(csv[i + 1].split(",")[j].equals("."))
+						if(csv[i + 1].split(",")[j].equals(".")|| !startsWithNumber(csv[i + 1].split(",")[j]))
+						{							
 							continue;
+						}							
 						
 						shiftPosition = csv[i + 1].split(",")[j];
 					}
@@ -275,7 +278,7 @@ public class Main
 				}
 			}
 		}
-		//End parsing	
+		//End parsing
 		
 		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
@@ -624,6 +627,8 @@ public class Main
 		file.log("\n****************************************************");
 		file.log("Copyright (C) 2016, Brett Allen");
 		file.log("****************************************************\n");
+		
+		System.out.println("Done! Displayed schedule for " + day + "\n");
 	}
 	
 	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols, Logger file) throws IOException
