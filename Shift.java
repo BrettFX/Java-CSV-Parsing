@@ -66,16 +66,18 @@ public class Shift
 	}
 	
 	public String displayShift()
-	{
-		return "\n" + employee.split(",")[1].trim() + ": " +	startTime + " - " + endTime;
+	{	
+		return "\n" + employee.split(",")[1].trim() + " " + employee.split(",")[0].trim().charAt(0) 
+				+ ": " +	startTime + " - " + endTime;
 	}
 
 	@Override
 	public String toString() 
 	{
-		return "\n" + employee.split(",")[1].trim() + ": " +	startTime + " - " + endTime;
+		return "\n" + employee.split(",")[1].trim() + " " + employee.split(",")[0].trim().charAt(0) 
+				+ ": " +	startTime + " - " + endTime;
 		
-		/*return "Day: " + date + "\nEmployee: " + employee + "\nPosition: " + position + 
+		/*return "Day: " + day + "\nEmployee: " + employee + "\nPosition: " + position + 
 				"\nTime: " + startTime + " - " + endTime + "\n";*/
 	}
 }
