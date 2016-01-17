@@ -93,8 +93,7 @@ public class Main
 		boolean multiplier;
 		
 		ArrayList<String> chosenFile = new ArrayList<String>();
-		
-		//Temp code
+	
         try 
         {
             // FileReader reads text files in the default encoding.
@@ -120,11 +119,8 @@ public class Main
         }
         catch(IOException ex) 
         {
-            System.err.println("Error reading file '" + fileName + "'");                  
-            // Or we could just do this: 
-            // ex.printStackTrace();
-        }    
-		//End temp code
+            System.err.println("Error reading file '" + fileName + "'");
+        } 
         
         //Test method
 		//String[] csv = readFile(PATH);
