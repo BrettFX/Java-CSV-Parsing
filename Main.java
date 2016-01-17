@@ -57,7 +57,7 @@ public class Main
 		
 		
 		//Use this path if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
-		myPath.setCurrentDirectory(new File("C:/"));
+		myPath.setCurrentDirectory(new File("C:/Users/Brett/Documents/BJs Wholesale Club/Schedules/01-16-16"));
 		myPath.setDialogTitle("Open");
 		
 		
@@ -241,6 +241,15 @@ public class Main
 							
 							shiftPosition2 = csv[i + 4].split(",")[j];
 							shiftTime2 = csv[i + 5].split(",")[j];
+						}
+						else if(!csv[i + 3].split(",")[j].equals(".") &&
+								!startsWithNumber(csv[i + 3].split(",")[j]) &&
+								!csv[i + 3].startsWith("\""))
+						{
+							multiplier = true;
+							
+							shiftPosition2 = csv[i + 3].split(",")[j];
+							shiftTime2 = csv[i + 4].split(",")[j];
 						}
 						
 						if(multiplier)
