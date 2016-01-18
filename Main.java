@@ -48,37 +48,30 @@ public class Main
 		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
 		ArrayList<String> truncDates = new ArrayList<String>();
 		
-		@SuppressWarnings("resource")
 		Scanner input = new Scanner(System.in);
 		
 		//Delegate file chooser to specification file (class)
 		JButton open = new JButton();
 		JFileChooser myPath = new JFileChooser();
 		
-		
 		//Use these paths if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
 		//									  "C:/Users/Brett/Documents/BJs Wholesale Club/Schedules"
-		myPath.setCurrentDirectory(new File("C:/Users/Brett/Documents/BJs Wholesale Club/Schedules/01-16-16"));
+		myPath.setCurrentDirectory(new File("C:/Users/Brett/Documents/BJs Wholesale Club/Schedules"));
 		myPath.setDialogTitle("Open");
 		
-		
-		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}		
-		//End chooser
+		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}
 		
 		String employee = "",
-				day = "",
-				date = "",
 				shiftPosition = "",
 				shiftPosition2 = "",
 				shiftTime = "",
 				shiftTime2 = "",
 				lineA = "",
 				lineB = "",
-				lines = null,				
+				lines = null,
 				fileName = myPath.getSelectedFile().getAbsolutePath();
 		
-		String[] dates,
-					toks = new String[2];
+		String[] dates;					
 
 		int startCol = 0, 
 				numEmployees = 0,
@@ -86,12 +79,13 @@ public class Main
 				e = -1, 
 				choice = -1,
 				iOffset = 0,
-				count = -1;				
-		
+				count = -1;
+				
 		//Used for input validation
 		char invalidChoice = ' ';
 		
-		boolean multiplier;
+		boolean multiplier,
+				fileDiscrepancyHandler = true;
 		
 		ArrayList<String> chosenFile = new ArrayList<String>();
 	
@@ -189,13 +183,51 @@ public class Main
 					
 					shiftPosition = lineA.split(",")[j + 1];
 					
+					/*if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
+					{	
+						if(csv[i + 1].split(",")[j].equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
+						{	
+							//Skewed file
+							fileDiscrepancyHandler = false;					
+						}
+					}
+					
 					//If shiftPosition is blank Or the cell directly below it contains a shiftPosition
 					//process that employee
+					
+					if(fileDiscrepancyHandler)
+					{
+						if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
+						{
+							//If the cell directly below the initially set shiftPosition is also blank 
+							//skip that employee
+							if(csv[i + 1].split(",")[j].equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
+							{										
+								continue;
+							}
+							shiftPosition = csv[i + 1].split(",")[j];
+						}
+					}
+					else
+					{
+						if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
+						{
+							//If the cell directly below the initially set shiftPosition is also blank 
+							//skip that employee
+							if(csv[i + 1].split(",")[j].equals("."))
+							{							
+								continue;
+							}							
+							
+							shiftPosition = csv[i + 1].split(",")[j];
+						}
+					}				*/	
+					
 					if (shiftPosition.equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
 					{
 						//If the cell directly below the initially set shiftPosition is also blank 
 						//skip that employee
-						if(csv[i + 1].split(",")[j].equals(".")|| !startsWithNumber(csv[i + 1].split(",")[j]))
+						if(csv[i + 1].split(",")[j].equals(".") || !startsWithNumber(csv[i + 1].split(",")[j]))
 						{							
 							continue;
 						}							
@@ -304,10 +336,10 @@ public class Main
 			}			
 			
 			//Validate choice
-			while(choice < 0 || choice > 7 || invalidChoice != ' ')
+			while(choice < 0 || choice > 8 || invalidChoice != ' ')
 			{
 				System.err.println("\nError! Invalid input.");
-				System.err.println("Enter a number 1 - 7\n");
+				System.err.println("Enter a number 1 - 8\n");
 				displayMenu();
 				try
 				{
@@ -323,117 +355,34 @@ public class Main
 			switch(choice)
 			{
 			case 1:
-				day = "Sunday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-				
-				Logger sunday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				sunday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, sunday);
+				renderChoice("Sunday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 2:
-				day = "Monday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger monday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				monday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, monday);
+				renderChoice("Monday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 3:
-				day = "Tuesday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger tuesday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				tuesday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, tuesday);
+				renderChoice("Tuesday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 4:
-				day = "Wednesday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger wednesday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				wednesday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, wednesday);
+				renderChoice("Wednesday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 5:
-				day = "Thursday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger thursday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				thursday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, thursday);
+				renderChoice("Thursday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 6:
-				day = "Friday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger friday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				friday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, friday);
+				renderChoice("Friday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
 			case 7:
-				day = "Saturday";
-				
-				toks = truncDates.get(choice - 1).split("-");
-				date = toks[1].toUpperCase() + "-" + toks[0];
-
-				Logger saturday = new Logger(day, date);
-				
-				System.out.println("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				saturday.log("\n" + day.toUpperCase() + " " +
-						date + ":");
-				
-				displayWallSchedule(day, schedule, numEmployees, DAYS, saturday);
+				renderChoice("Saturday", schedule, numEmployees, DAYS, choice, truncDates);
 				break;
+			case 8:
+				renderChoice("Sunday", schedule, numEmployees, DAYS, choice - 7, truncDates);
+				renderChoice("Monday", schedule, numEmployees, DAYS, choice - 6, truncDates);
+				renderChoice("Tuesday", schedule, numEmployees, DAYS, choice - 5, truncDates);
+				renderChoice("Wednesday", schedule, numEmployees, DAYS, choice - 4, truncDates);
+				renderChoice("Thursday", schedule, numEmployees, DAYS, choice - 3, truncDates);
+				renderChoice("Friday", schedule, numEmployees, DAYS, choice - 2, truncDates);
+				renderChoice("Saturday", schedule, numEmployees, DAYS, choice - 1, truncDates);
 			default:
 				break;
 			}
@@ -453,6 +402,7 @@ public class Main
 		System.out.println("5) Thursday");
 		System.out.println("6) Friday");
 		System.out.println("7) Saturday");
+		System.out.println("8) Display All");
 		System.out.println("0) Exit\n");
 		System.out.print(">> ");
 	}	
@@ -559,10 +509,29 @@ public class Main
 		}
 	}
 	
-	//Remove duplicates method here
+	public static void renderChoice(String day, Shift[][] myArray, int rows, int cols,
+			int choice,  ArrayList<String> truncDates) throws IOException
+	{
+		String[] toks = new String[2];
+		String date = "";
+		
+		toks = truncDates.get(choice - 1).split("-");
+		date = toks[1].toUpperCase() + "-" + toks[0];
+		
+		Logger dayFile = new Logger(day, date);
+		
+		System.out.println("\n" + day.toUpperCase() + " " +
+				date + ":");
+		
+		dayFile.log("\n" + day.toUpperCase() + " " +
+				date + ":");
+		
+		displayWallSchedule(day, myArray, rows, cols, dayFile);
+	}
 	
 	//Method that calls the displayShifts method using the positions included in wall schedule
-	public static void displayWallSchedule(String day, Shift[][] myArray, int rows, int cols, Logger file) throws IOException
+	public static void displayWallSchedule(String day, Shift[][] myArray, int rows,
+			int cols, Logger file) throws IOException
 	{
 		System.out.println("\n***********FRONT LINE SUPV**********");
 		file.log("\n***********FRONT LINE SUPV**********");
@@ -621,7 +590,7 @@ public class Main
 		displayShifts("Produce", day, myArray, rows, cols, file);
 		
 		System.out.println("\n****************************************************");
-		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
+		System.out.println("Copyright (C) 2016, Brett Allen");
 		System.out.println("****************************************************\n");
 		
 		file.log("\n****************************************************");
@@ -638,7 +607,7 @@ public class Main
 		displayShifts("Cashier", day, myArray, rows, cols, file);
 		
 		System.out.println("\n****************************************************");
-		System.out.println("Copyright (C) 2016, Brett Allen, Christian Alexander");
+		System.out.println("Copyright (C) 2016, Brett Allen");
 		System.out.println("****************************************************\n");
 		
 		file.log("\n****************************************************");
@@ -778,9 +747,11 @@ public class Main
 		return -1;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static String[] readFile(String path) 
 	{
-		ArrayList<String> lines = new ArrayList<>();
+		@SuppressWarnings("rawtypes")
+		ArrayList<String> lines = new ArrayList();
 
 		InputStream inStream = Main.class.getResourceAsStream(path);
 
