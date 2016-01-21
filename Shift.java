@@ -70,10 +70,48 @@ public class Shift
 		return "\n" + employee.split(",")[1].trim() + " " + employee.split(",")[0].trim().charAt(0) 
 				+ ": " +	startTime + " - " + endTime;
 	}
+	
+	public String getShiftTime()
+	{
+		String[] truncStart = new String[2],
+				truncEnd = new String[2];
+		
+		if(startTime.contains("a"))
+			truncStart = startTime.split("a");
+		else if(startTime.contains("p"))
+			truncStart = startTime.split("p");
+		
+		/*if(endTime.contains("p"))
+			truncEnd = endTime.split("p");
+		else if(endTime.contains("a"))
+			truncEnd = endTime.split("a");*/
+		
+		return truncStart[0] + "-" + endTime;
+	}
+	
+	public String getName()
+	{
+		String nickName = "";
+		
+		if(employee.split(",")[1].trim().contains("Christopher"))
+		{
+			nickName = "Chris";
+			
+			return nickName + " " + employee.split(",")[0].trim().charAt(0);
+		}		
+		else if(employee.split(",")[1].trim().contains("Mekdes"))
+		{
+			nickName = "Mimi";
+			
+			return nickName + " " + employee.split(",")[0].trim().charAt(0);
+		}
+		
+		return employee.split(",")[1].trim() + " " + employee.split(",")[0].trim().charAt(0);
+	}
 
 	@Override
 	public String toString() 
-	{
+	{		
 		return "\n" + employee.split(",")[1].trim() + " " + employee.split(",")[0].trim().charAt(0) 
 				+ ": " +	startTime + " - " + endTime;
 		
