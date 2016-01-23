@@ -40,15 +40,17 @@ import jxl.write.biff.RowsExceededException;
 public class Main 
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
-	public static final int DAYS = 7;
+	public static final int DAYS = 7;	
 	
-	public static final InputStream TEMPLATE = Main.class.getResourceAsStream("/template.xls");
 	public static final String TEST1 = "/Test Schedule for Brett.csv";
 	public static final String TEST2 = "/FLS Wall Schedule.csv";
 	public static final String PATH = "/wall schedule.csv";
 
 	public static void main(String[] args) throws IOException, BiffException, RowsExceededException, WriteException
-	{			
+	{	
+		//Initialize local variables
+		System.out.println("Initializing...");
+		
 		Shift[][] schedule;		
 		Shift shift1;
 		Shift shift2;
@@ -59,6 +61,7 @@ public class Main
 		Scanner input = new Scanner(System.in);
 		
 		//Delegate file chooser to specification file (class)
+		System.out.println("Running file chooser...");
 		JButton open = new JButton();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("csv files", "csv");
 		JFileChooser myPath = new JFileChooser();
@@ -99,8 +102,12 @@ public class Main
 				fileDiscrepancyHandler = true;
 		
 		ArrayList<String> chosenFile = new ArrayList<String>();
+		
+		System.out.println("Initialization complete.\n");
+		//End initialization
 	
-		System.out.println("Loading...");
+		//Try opening chosen file
+		System.out.println("Opening file...");
 		
         try 
         {
@@ -130,8 +137,14 @@ public class Main
             System.err.println("Error reading file '" + fileName + "'");
         } 
         
+        System.out.println("Done.\n");
+        //End open file
+        
         //Test method
 		//String[] csv = readFile(PATH);
+        
+        //Process chosen file
+        System.out.println("Processing file...");
         
         String[] csv = chosenFile.toArray(new String[chosenFile.size()]);
 		
@@ -526,8 +539,10 @@ public class Main
 	
 	public static void renderChoice(String day, Shift[][] myArray, int rows, int cols,
 			int choice,  ArrayList<String> truncDates) throws IOException, BiffException,
-	RowsExceededException, WriteException
+			RowsExceededException, WriteException
 	{
+		InputStream template = Main.class.getResourceAsStream("/template.xls");
+		
 		String[] toks = new String[2];
 		String date = "";
 		String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
@@ -535,18 +550,12 @@ public class Main
 		toks = truncDates.get(choice - 1).split("-");
 		date = toks[1].toUpperCase() + "-" + toks[0];
 		
-		ExcelWriter frontLineSchedule = new ExcelWriter(TEMPLATE, day, date, year);
+		ExcelWriter frontLineSchedule = new ExcelWriter(template, day, date, year);
+		
 		frontLineSchedule.overwriteEmptyCell(1, 0, day, 0);
 		frontLineSchedule.overwriteEmptyCell(13, 0, date + "-" + year, 0);
 		
-		/*Logger file = new Logger(day, date);
-		
-		file.log("\n" + day.toUpperCase() + " " +
-				date + ":");
-		
-		System.out.println("\n" + day.toUpperCase() + " " +
-				date + ":");*/
-		System.out.println("\nLoading...");
+		System.out.println("\nRendering choice...");
 		
 		displayFrontLineSchedule(day, myArray, rows, cols, frontLineSchedule);	
 		
