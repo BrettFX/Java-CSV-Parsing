@@ -5,7 +5,7 @@
  * | |___ ___) |\ V /   |  __/ ___ \|  _ < ___) | || |\  | |_| | *
  *  \____|____/  \_/    |_| /_/   \_\_| \_\____/___|_| \_|\____| *
  *                                                               *
- * Copyright (C) 2015, Christian Alexander, Brett Allen          *
+ * Copyright (C) 2015, Christian Alexander, Brett Allen          *	
  *****************************************************************/
 package net.alexanderdev.csvparsing;
 
