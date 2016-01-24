@@ -11,7 +11,6 @@ package net.alexanderdev.csvparsing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -21,13 +20,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.InputMismatchException;
 import java.util.Scanner;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
+import javax.swing.text.BadLocationException;
 import jxl.read.biff.BiffException;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
@@ -37,7 +31,7 @@ import jxl.write.biff.RowsExceededException;
  * @since Oct 22, 2015, 1:13:31 PM
  */
 
-public class Main 
+public class Main
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
 	public static final int DAYS = 7;	
@@ -46,10 +40,17 @@ public class Main
 	public static final String TEST2 = "/FLS Wall Schedule.csv";
 	public static final String PATH = "/wall schedule.csv";
 
-	public static void main(String[] args) throws IOException, BiffException, RowsExceededException, WriteException
+	public static void main(String[] args) throws IOException, BiffException, RowsExceededException,
+													WriteException, InterruptedException, BadLocationException
 	{	
 		//Initialize local variables
 		System.out.println("Initializing...");
+		
+		Menu menu = new Menu();
+		menu.setVisible(true);
+		menu.setResizable(false);	
+		
+		menu.print("Initializing...\n");
 		
 		Shift[][] schedule;		
 		Shift shift1;
@@ -61,7 +62,7 @@ public class Main
 		Scanner input = new Scanner(System.in);
 		
 		//Delegate file chooser to specification file (class)
-		System.out.println("Running file chooser...");
+		/*System.out.println("Running file chooser...");
 		JButton open = new JButton();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("csv files", "csv");
 		JFileChooser myPath = new JFileChooser();
@@ -73,7 +74,11 @@ public class Main
 		myPath.setCurrentDirectory(new File("C:/"));
 		myPath.setDialogTitle("Open");
 		
-		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}
+		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}*/
+		
+		boolean multiplier,
+				errorProcessing = false,
+				fileDiscrepancyHandler = true;
 		
 		String employee = "",
 				shiftPosition = "",
@@ -83,7 +88,9 @@ public class Main
 				lineA = "",
 				lineB = "",
 				lines = null,
-				fileName = myPath.getSelectedFile().getAbsolutePath();
+				fileName = menu.getPath();		
+		
+		//fileName = myPath.getSelectedFile().getAbsolutePath();
 		
 		String[] dates;					
 
@@ -98,16 +105,15 @@ public class Main
 		//Used for input validation
 		char invalidChoice = ' ';
 		
-		boolean multiplier,
-				fileDiscrepancyHandler = true;
-		
 		ArrayList<String> chosenFile = new ArrayList<String>();
 		
 		System.out.println("Initialization complete.\n");
+		menu.print("Initialization complete.\n\n");
 		//End initialization
 	
 		//Try opening chosen file
 		System.out.println("Opening file...");
+		menu.print("Opening file...\n");
 		
         try 
         {
@@ -115,8 +121,7 @@ public class Main
             FileReader fileReader = new FileReader(fileName);
 
             // Always wrap FileReader in BufferedReader.
-            BufferedReader bufferedReader = 
-                new BufferedReader(fileReader);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             while((lines = bufferedReader.readLine()) != null) 
             {
@@ -130,21 +135,30 @@ public class Main
         }
         catch(FileNotFoundException ex) 
         {
-            System.err.println("Unable to open file '" + fileName + "'");                
+        	errorProcessing = true;
+            System.err.println("Unable to open file '" + fileName + "'"); 
+            menu.print("Unable to open file '" + fileName + "'\n");
         }
         catch(IOException ex) 
         {
+        	errorProcessing = true;
             System.err.println("Error reading file '" + fileName + "'");
-        } 
+            menu.print("Error reading file '" + fileName + "'\n");
+        }         
         
         System.out.println("Done.\n");
+        menu.print("Done.\n\n");
         //End open file
         
         //Test method
 		//String[] csv = readFile(PATH);
         
         //Process chosen file
-        System.out.println("Processing file...");
+        if(!errorProcessing)
+        {
+        	  System.out.println("Processing file...");
+              menu.print("Processing file...\n");
+        }      
         
         String[] csv = chosenFile.toArray(new String[chosenFile.size()]);
 		
@@ -160,6 +174,7 @@ public class Main
 				if (startCol == -1) 
 				{
 					System.err.println("Sunday not found!");
+					menu.print("Sunday not found!\n");
 					System.exit(-1);
 				}
 			}
@@ -348,9 +363,12 @@ public class Main
 		removeDuplicates(schedule, numEmployees, DAYS);
 		
 		System.out.println("Done.\n");
+		menu.print("Done.\n\n");
+		
+		menu.transferVariables(schedule, numEmployees, DAYS, truncDates);
 		
 		//Display menu and display schedule	
-		do
+		/*do
 		{
 			displayMenu();
 			try
@@ -415,22 +433,22 @@ public class Main
 				break;
 			}
 			
-		}while(choice != 0);
+		}while(choice != 0);*/
 	}
 	
 	public static void displayMenu()
 	{
 		/*System.out.println("\n\t\tHOME");
 		System.out.println("-----------------------------------------");*/
-		System.out.println("Please choose a day to print (1 - 7):\n");
-		System.out.println("1) Sunday");
-		System.out.println("2) Monday");
-		System.out.println("3) Tuesday");
-		System.out.println("4) Wednesday");
-		System.out.println("5) Thursday");
-		System.out.println("6) Friday");
-		System.out.println("7) Saturday");
-		System.out.println("8) Display All");
+		System.out.println("Please choose a day to process (1 - 7):\n");
+		System.out.println("1) Process Sunday");
+		System.out.println("2) Process Monday");
+		System.out.println("3) Process Tuesday");
+		System.out.println("4) Process Wednesday");
+		System.out.println("5) Process Thursday");
+		System.out.println("6) Process Friday");
+		System.out.println("7) Process Saturday");
+		System.out.println("8) Process All");
 		System.out.println("0) Exit\n");
 		System.out.print(">> ");
 	}	
@@ -898,5 +916,5 @@ public class Main
 				e.printStackTrace();
 			}
 		}
-	}
+	}	
 }
