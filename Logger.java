@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 
 public class Logger {
 	
-	private static String day;
-	private static String date;
+	private String day;
+	private String date;
 	
 	public Logger(String day, String date)
 	{
@@ -21,8 +21,7 @@ public class Logger {
     		  " " + date + ".txt"
     		  , true), true);
       
-      out.write(message);
-      out.write("\n");
+      out.println(message);
       out.close();
     }
 }
