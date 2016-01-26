@@ -11,6 +11,7 @@ package net.alexanderdev.csvparsing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -20,8 +21,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Scanner;
+
 import javax.swing.text.BadLocationException;
+
 import jxl.read.biff.BiffException;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
@@ -42,15 +44,25 @@ public class Main
 
 	public static void main(String[] args) throws IOException, BiffException, RowsExceededException,
 													WriteException, InterruptedException, BadLocationException
-	{	
-		//Initialize local variables
-		System.out.println("Initializing...");
-		
+	{		
 		Menu menu = new Menu();
 		menu.setVisible(true);
-		menu.setResizable(false);	
+		menu.setResizable(false);
 		
+		//Set the value of the public menu variable in the Menu class to the value of the menu variable here
+		menu.menu = menu;
+	}//End main
+	
+	//This method embodies all the central processing of this program. It acts as an overloaded main method 
+	//and will be called only by the Menu class
+	public static void mainDelegate(Menu menu) throws BadLocationException, BiffException, IOException
+	{
+		//Initialize local variables
 		menu.print("Initializing...\n");
+		
+		//Creating a CsvConverter variable that will be instantiated once the initial
+		//xls file is edited programmatically
+		CsvConverter converter = null;
 		
 		Shift[][] schedule;		
 		Shift shift1;
@@ -58,23 +70,6 @@ public class Main
 		
 		ArrayList<Shift> multiShifts = new ArrayList<Shift>();
 		ArrayList<String> truncDates = new ArrayList<String>();
-		
-		Scanner input = new Scanner(System.in);
-		
-		//Delegate file chooser to specification file (class)
-		/*System.out.println("Running file chooser...");
-		JButton open = new JButton();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("csv files", "csv");
-		JFileChooser myPath = new JFileChooser();
-		
-		myPath.setFileFilter(filter);
-		
-		//Use these paths if testing on main: "C:/Users/Brett/Workspace/Java/CSV Parsing/res"
-		//									  "C:/Users/Brett/Documents/BJs Wholesale Club/Schedules"
-		myPath.setCurrentDirectory(new File("C:/"));
-		myPath.setDialogTitle("Open");
-		
-		if(myPath.showOpenDialog(open) == JFileChooser.APPROVE_OPTION){}*/
 		
 		boolean multiplier,
 				errorProcessing = false,
@@ -87,10 +82,10 @@ public class Main
 				shiftTime2 = "",
 				lineA = "",
 				lineB = "",
-				lines = null,
-				fileName = menu.getPath();		
+				lines = null;
 		
-		//fileName = myPath.getSelectedFile().getAbsolutePath();
+		//
+		String fileName = menu.getPath();
 		
 		String[] dates;					
 
@@ -107,18 +102,38 @@ public class Main
 		
 		ArrayList<String> chosenFile = new ArrayList<String>();
 		
-		System.out.println("Initialization complete.\n");
 		menu.print("Initialization complete.\n\n");
 		//End initialization
 	
-		//Try opening chosen file
-		System.out.println("Opening file...");
+		//Try opening chosen file		
 		menu.print("Opening file...\n");
 		
         try 
-        {
-            // FileReader reads text files in the default encoding.
-            FileReader fileReader = new FileReader(fileName);
+        {        	
+        	//Create a new ExcelWriter that will receive an excel file as input and eventually parse to .csv		
+    		ExcelWriter writer = new ExcelWriter(fileName);
+    		
+    		//Deleting column A
+    		writer.deleteColumn(0);		
+    		writer.writeAndClose();
+    		
+    		try 
+    		{
+                converter = new CsvConverter();
+                
+                converter.convertExcelToCSV(writer.getXlsFilePath(),
+                		new File(".").getAbsolutePath());
+            }
+            catch(Exception ex) 
+    		{
+                System.err.println("Caught an: " + ex.getClass().getName());
+                System.err.println("Message: " + ex.getMessage());
+                System.err.println("Stacktrace follows:.....");
+                ex.printStackTrace(System.out);                
+            }
+        	
+            //Reading text files in the default encoding.
+            FileReader fileReader = new FileReader(converter.getCsvFilePath());
 
             // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -146,7 +161,6 @@ public class Main
             menu.print("Error reading file '" + fileName + "'\n");
         }         
         
-        System.out.println("Done.\n");
         menu.print("Done.\n\n");
         //End open file
         
@@ -154,14 +168,11 @@ public class Main
 		//String[] csv = readFile(PATH);
         
         //Process chosen file
-        if(!errorProcessing)
-        {
-        	  System.out.println("Processing file...");
-              menu.print("Processing file...\n");
-        }      
+        if(!errorProcessing)        
+        	  menu.print("Processing file...\n");
         
-        String[] csv = chosenFile.toArray(new String[chosenFile.size()]);
-		
+        String[] csv = chosenFile.toArray(new String[chosenFile.size()]); 
+        
 		// Search where the dates column starts for data parsing
 		for (String line : csv) 
 		{
@@ -179,7 +190,8 @@ public class Main
 				}
 			}
 
-			if (line.startsWith("\"")) {
+			if (line.startsWith("\"")) 
+			{
 				numEmployees++;
 			}
 		}
@@ -362,96 +374,11 @@ public class Main
 		//Remove all duplicate shifts from schedule array
 		removeDuplicates(schedule, numEmployees, DAYS);
 		
-		System.out.println("Done.\n");
 		menu.print("Done.\n\n");
 		
+		//Transfer specified variables to the Menu class for rendering purposes
 		menu.transferVariables(schedule, numEmployees, DAYS, truncDates);
-		
-		//Display menu and display schedule	
-		/*do
-		{
-			displayMenu();
-			try
-			{
-				choice = input.nextInt();
-				invalidChoice = ' ';
-			}
-			catch(InputMismatchException exception)
-			{
-				invalidChoice = input.next().charAt(0);				
-			}			
-			
-			//Validate choice
-			while(choice < 0 || choice > 8 || invalidChoice != ' ')
-			{
-				System.err.println("\nError! Invalid input.");
-				System.err.println("Enter a number 1 - 8\n");
-				displayMenu();
-				try
-				{
-					choice = input.nextInt();
-					invalidChoice = ' ';
-				}
-				catch(InputMismatchException exception)
-				{
-					invalidChoice = input.next().charAt(0);			
-				}
-			}
-			
-			switch(choice)
-			{
-			case 1:
-				renderChoice("Sunday", schedule, numEmployees, DAYS, choice, truncDates);				
-				break;
-			case 2:
-				renderChoice("Monday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 3:
-				renderChoice("Tuesday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 4:
-				renderChoice("Wednesday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 5:
-				renderChoice("Thursday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 6:
-				renderChoice("Friday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 7:
-				renderChoice("Saturday", schedule, numEmployees, DAYS, choice, truncDates);
-				break;
-			case 8:
-				renderChoice("Sunday", schedule, numEmployees, DAYS, choice - 7, truncDates);
-				renderChoice("Monday", schedule, numEmployees, DAYS, choice - 6, truncDates);
-				renderChoice("Tuesday", schedule, numEmployees, DAYS, choice - 5, truncDates);
-				renderChoice("Wednesday", schedule, numEmployees, DAYS, choice - 4, truncDates);
-				renderChoice("Thursday", schedule, numEmployees, DAYS, choice - 3, truncDates);
-				renderChoice("Friday", schedule, numEmployees, DAYS, choice - 2, truncDates);
-				renderChoice("Saturday", schedule, numEmployees, DAYS, choice - 1, truncDates);
-			default:
-				break;
-			}
-			
-		}while(choice != 0);*/
 	}
-	
-	public static void displayMenu()
-	{
-		/*System.out.println("\n\t\tHOME");
-		System.out.println("-----------------------------------------");*/
-		System.out.println("Please choose a day to process (1 - 7):\n");
-		System.out.println("1) Process Sunday");
-		System.out.println("2) Process Monday");
-		System.out.println("3) Process Tuesday");
-		System.out.println("4) Process Wednesday");
-		System.out.println("5) Process Thursday");
-		System.out.println("6) Process Friday");
-		System.out.println("7) Process Saturday");
-		System.out.println("8) Process All");
-		System.out.println("0) Exit\n");
-		System.out.print(">> ");
-	}	
 	
 	public static void combine(Shift[][] myArray1, int rows, int cols, ArrayList<Shift> myArray2)
 	{
@@ -556,8 +483,8 @@ public class Main
 	}
 	
 	public static void renderChoice(String day, Shift[][] myArray, int rows, int cols,
-			int choice,  ArrayList<String> truncDates) throws IOException, BiffException,
-			RowsExceededException, WriteException
+			int choice,  ArrayList<String> truncDates, Menu menu) throws IOException, BiffException,
+			RowsExceededException, WriteException, BadLocationException
 	{
 		InputStream template = Main.class.getResourceAsStream("/template.xls");
 		
@@ -571,17 +498,17 @@ public class Main
 		ExcelWriter frontLineSchedule = new ExcelWriter(template, day, date, year);
 		
 		frontLineSchedule.overwriteEmptyCell(1, 0, day, 0);
-		frontLineSchedule.overwriteEmptyCell(13, 0, date + "-" + year, 0);
+		frontLineSchedule.overwriteEmptyCell(13, 0, date + "-" + year, 0);		
 		
-		System.out.println("\nRendering choice...");
+		menu.print("\nRendering choice...\n");
 		
 		displayFrontLineSchedule(day, myArray, rows, cols, frontLineSchedule);	
 		
-		System.out.println("Done.\n\nFront Line schedule for " + day + ", " + date + "-" + year + " has been created.");
+		menu.print("Done.\n\nFront Line schedule for " + day + ", " + date + "-" + year + " has been created.\n");
 		
-		System.out.println("\n****************************************************");
-		System.out.println("Copyright (C) 2016, Brett Allen");
-		System.out.println("****************************************************\n");
+		/*System.out.println("\n****************************************************");
+		System.out.println("Created By: Brett Allen");
+		System.out.println("****************************************************\n");*/
 		
 		frontLineSchedule.writeAndClose();
 	}
@@ -624,33 +551,19 @@ public class Main
 	{	
 	}
 	
-	public static void displayTest(Shift[][] myArray, int rows, int cols, ExcelWriter writer,
-			boolean printNull) throws RowsExceededException, WriteException, IOException
+	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
 	{	
-		int excelRow = 4, 
-			excelCol = 0;
-		
-		writer.overwriteEmptyCell(1, 0, "Sunday", 0);
-		writer.overwriteEmptyCell(13, 0, "Jan-17", 0);
-		
 		for(int x = 0; x < rows; x++)
 		{
 			for(int y = 0; y < cols; y++)
 			{
 				if(printNull == false)
 				{
-					if(myArray[x][y] != null && myArray[x][y].position.contains("Front Line Supv")
+					if(myArray[x][y] != null
 							&& myArray[x][y].day.equals("Sunday")
 							&& getMilitaryTime(myArray[x][y].endTime) > 900)
 					{						
-						//Traverse excel template and fill name and time only if there is not already a name and time there
-						if(writer.isEmptyCell(excelCol, excelRow) && excelRow < excelRow + 5)
-						{							
-							writer.overwriteEmptyCell(excelCol, excelRow, myArray[x][y].getName(), 1);
-							writer.overwriteEmptyCell(excelCol + 1, excelRow, myArray[x][y].getShiftTime(), 2);
-							
-							excelRow++;
-						}
+						System.out.println(myArray[x][y]);
 					}	
 				}
 				else
