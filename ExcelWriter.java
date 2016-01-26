@@ -21,20 +21,38 @@ import jxl.write.biff.RowsExceededException;
 
 public class ExcelWriter 
 {
-	private Workbook scheduleTemplate;
+	private Workbook input;
 	private WritableWorkbook copy;
 	private WritableSheet sheet1;
 	private WritableCell cell;
+	private File inFile;
 	
 	public ExcelWriter(InputStream path, String day, String date, String year) throws BiffException, IOException
 	{	
-		scheduleTemplate = Workbook.getWorkbook(path);		
+		input = Workbook.getWorkbook(path);		
 		
 		copy = Workbook.createWorkbook(new File("Front Line Schedule for " + day +
-	    		  " " + date + "-" + year + ".xls"), scheduleTemplate);
+	    		  " " + date + "-" + year + ".xls"), input);
 		
-		//Set the writable sheet to Sheet1 of template.xls
+		//Set the writable sheet to Sheet1 of the input excel file
 		sheet1 = copy.getSheet(0);
+	}
+	
+	public ExcelWriter(String path) throws BiffException, IOException
+	{		
+		input = Workbook.getWorkbook(new File(path));	
+		
+		inFile = new File("input.xls");
+		
+		copy = Workbook.createWorkbook(inFile, input);
+		
+		//Set the writable sheet to Sheet1 of the input excel file
+		sheet1 = copy.getSheet(0);
+	}
+	
+	public void deleteColumn(int col)
+	{
+		sheet1.removeColumn(col);
 	}
 	
 	public boolean isEmptyCell(int col, int row)
@@ -51,6 +69,21 @@ public class ExcelWriter
 		//Set writable cell to the first name cell within FRONT LINE SUPERVISOR table		
 		Label lbl = new Label(col , row, text, format(cellFormat));
 		sheet1.addCell(lbl);
+	}
+	
+	public WritableWorkbook getCopy()
+	{
+		return copy;
+	}
+	
+	public File getXlsFile()
+	{
+		return inFile;
+	}
+	
+	public String getXlsFilePath()
+	{
+		return inFile.getAbsolutePath().toString();
 	}
 	
 	public WritableCellFormat format(int choice) throws WriteException
@@ -97,6 +130,23 @@ public class ExcelWriter
 		return c.getContents();
 	}
 	
+	public void write() throws IOException
+	{
+		copy.write();
+	}
+	
+	public void close() throws IOException
+	{
+		try 
+		{
+			copy.close();
+		} 
+		catch (WriteException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public void writeAndClose() throws IOException
 	{
 		copy.write();
@@ -105,9 +155,9 @@ public class ExcelWriter
 		{
 			copy.close();
 		} 
-		catch (WriteException e2) 
+		catch (WriteException e) 
 		{
-			e2.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }
