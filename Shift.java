@@ -73,18 +73,12 @@ public class Shift
 	
 	public String getShiftTime()
 	{
-		String[] truncStart = new String[2],
-				truncEnd = new String[2];
+		String[] truncStart = new String[2];
 		
 		if(startTime.contains("a"))
 			truncStart = startTime.split("a");
 		else if(startTime.contains("p"))
 			truncStart = startTime.split("p");
-		
-		/*if(endTime.contains("p"))
-			truncEnd = endTime.split("p");
-		else if(endTime.contains("a"))
-			truncEnd = endTime.split("a");*/
 		
 		return truncStart[0] + "-" + endTime;
 	}
