@@ -1,0 +1,100 @@
+package net.alexanderdev.csvparsing;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+
+import jxl.*;
+import java.util.*;
+
+public class CsvConverter 
+{
+	private File xlsFile;
+	private File csvFile;
+	
+	public CsvConverter(File xlsFile)
+	{
+		this.xlsFile = xlsFile;
+		
+		try
+		{
+			//Store date from xls file to this csv file
+			csvFile = new File("input.csv");
+			
+			OutputStream oStream = (OutputStream)new FileOutputStream(csvFile);
+			OutputStreamWriter osw = new OutputStreamWriter(oStream, "UTF8");
+			BufferedWriter bWriter = new BufferedWriter(osw);
+			
+			//Get the excel file to manipulate
+			WorkbookSettings wbSettings = new WorkbookSettings();
+			wbSettings.setLocale(new Locale("en", "EN"));
+		    Workbook w = Workbook.getWorkbook(xlsFile, wbSettings);
+		    
+		    // Gets the sheets from workbook
+		    for (int sheet = 0; sheet < w.getNumberOfSheets(); sheet++)
+		    {
+		    	Sheet s = w.getSheet(sheet);
+	 
+		        Cell[] row = null;
+		        
+		        // Gets the cells from sheet
+		        for (int i = 0 ; i < s.getRows() ; i++)
+		        {		        	
+		        	row = s.getRow(i);
+		        	
+		        	if(row.length == 1 || row.length == 0)
+		        	{
+		        		for (int j = 0; j < row.length; j++)
+		        		{		 
+		        			/*if(row[j].getType() == CellType.EMPTY)
+		        				System.out.println("Blank Cell");
+		        			else
+		        				System.out.println(row[j].getContents());	*/	        			
+		        		}
+		        	}
+	 
+		        	if (row.length > 0)
+		        	{		        		
+		        		bWriter.write(row[0].getContents());
+		        		
+		        		for (int j = 1; j < row.length; j++)
+		        		{		        			
+		        			bWriter.write(",");		        			
+		        			bWriter.write(row[j].getContents());
+		        		}
+		        	}		        	
+		        	
+		        	bWriter.newLine();
+		        }
+		    }
+		    bWriter.flush();
+		    bWriter.close();
+		}
+		catch (UnsupportedEncodingException e)
+	    {
+	      System.err.println(e.toString());
+	    }
+	    catch (IOException e)
+	    {
+	      System.err.println(e.toString());
+	    }
+	    catch (Exception e)
+	    {
+	      System.err.println(e.toString());
+	    }
+	}
+	
+	public File getCsvFile()
+	{
+		return csvFile;
+	}
+	
+	public String getCsvFilePath()
+	{
+		return csvFile.getAbsoluteFile().toString();
+	}
+}
