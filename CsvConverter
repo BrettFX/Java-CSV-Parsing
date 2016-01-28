@@ -596,6 +596,11 @@ public class CsvConverter
         }
     }
     
+    public File getCsvFile()
+    {
+    	return csvFile;
+    }
+    
     public String getCsvFilePath()
     {
     	return csvFile.getAbsolutePath().toString();
