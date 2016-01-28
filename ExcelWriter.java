@@ -3,12 +3,14 @@ package net.alexanderdev.csvparsing;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
+import jxl.format.UnderlineStyle;
 import jxl.read.biff.BiffException;
 import jxl.write.Label;
 import jxl.write.WritableCell;
@@ -27,11 +29,11 @@ public class ExcelWriter
 	private WritableCell cell;
 	private File inFile;
 	
-	public ExcelWriter(InputStream path, String day, String date, String year) throws BiffException, IOException
+	public ExcelWriter(InputStream path, String scheduleType, String day, String date, String year) throws BiffException, IOException
 	{	
 		input = Workbook.getWorkbook(path);		
 		
-		copy = Workbook.createWorkbook(new File("Front Line Schedule for " + day +
+		copy = Workbook.createWorkbook(new File(scheduleType + " for " + day +
 	    		  " " + date + "-" + year + ".xls"), input);
 		
 		//Set the writable sheet to Sheet1 of the input excel file
@@ -110,7 +112,7 @@ public class ExcelWriter
 			
 			return cellFormat;
 		case 2: //Shift times
-			//Set the font to 9pt
+			//Set the font to Tahoma 9pt
 			cellFont = new WritableFont(WritableFont.TAHOMA, 9);
 			
 			cellFormat = new WritableCellFormat(cellFont);
@@ -118,8 +120,18 @@ public class ExcelWriter
 			cellFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 			
 			return cellFormat;
+		case 3: //Notes
+			//Set the font to Tahoma 10pt
+			cellFont = new WritableFont(WritableFont.TAHOMA, 10);
+			
+			//Underline the text
+			cellFont.setUnderlineStyle(UnderlineStyle.SINGLE);
+			
+			cellFormat = new WritableCellFormat(cellFont);
+			
+			return cellFormat;
 		default:
-			return null;	
+			return null;
 		}
 	}
 	
@@ -128,23 +140,6 @@ public class ExcelWriter
 		Cell c = sheet1.getCell(col, row);
 		
 		return c.getContents();
-	}
-	
-	public void write() throws IOException
-	{
-		copy.write();
-	}
-	
-	public void close() throws IOException
-	{
-		try 
-		{
-			copy.close();
-		} 
-		catch (WriteException e) 
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public void writeAndClose() throws IOException
