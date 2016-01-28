@@ -36,11 +36,7 @@ import jxl.write.biff.RowsExceededException;
 public class Main
 {
 	public static final String DATES = "Sun,Mon,Tue,Wed,Thu,Fri,Sat";
-	public static final int DAYS = 7;	
-	
-	public static final String TEST1 = "/Test Schedule for Brett.csv";
-	public static final String TEST2 = "/FLS Wall Schedule.csv";
-	public static final String PATH = "/wall schedule.csv";
+	public static final int DAYS = 7;
 
 	public static void main(String[] args) throws IOException, BiffException, RowsExceededException,
 													WriteException, InterruptedException, BadLocationException
@@ -50,7 +46,7 @@ public class Main
 		menu.setResizable(false);
 		
 		//Set the value of the public menu variable in the Menu class to the value of the menu variable here
-		menu.menu = menu;
+		menu.menu = menu;		
 	}//End main
 	
 	//This method embodies all the central processing of this program. It acts as an overloaded main method 
@@ -93,12 +89,8 @@ public class Main
 				numEmployees = 0,
 				dayNum = 0,
 				e = -1, 
-				choice = -1,
 				iOffset = 0,
 				count = -1;
-				
-		//Used for input validation
-		char invalidChoice = ' ';
 		
 		ArrayList<String> chosenFile = new ArrayList<String>();
 		
@@ -123,6 +115,9 @@ public class Main
                 
                 converter.convertExcelToCSV(writer.getXlsFilePath(),
                 		new File(".").getAbsolutePath());
+                
+                //Delete input.xls
+                writer.getXlsFile().delete();
             }
             catch(Exception ex) 
     		{
@@ -159,7 +154,10 @@ public class Main
         	errorProcessing = true;
             System.err.println("Error reading file '" + fileName + "'");
             menu.print("Error reading file '" + fileName + "'\n");
-        }         
+        }
+        
+        //Delete input.csv
+        converter.getCsvFile().delete();
         
         menu.print("Done.\n\n");
         //End open file
@@ -365,6 +363,9 @@ public class Main
 		}
 		//End parsing
 		
+		//Delete input.xls and input.csv
+		
+		
 		//Combine original schedule with multiShifts. Overwrite null elements of original schedule
 		combine(schedule, numEmployees, DAYS, multiShifts);
 		
@@ -378,7 +379,7 @@ public class Main
 		
 		//Transfer specified variables to the Menu class for rendering purposes
 		menu.transferVariables(schedule, numEmployees, DAYS, truncDates);
-	}
+	}//End mainDelegate
 	
 	public static void combine(Shift[][] myArray1, int rows, int cols, ArrayList<Shift> myArray2)
 	{
@@ -486,8 +487,6 @@ public class Main
 			int choice,  ArrayList<String> truncDates, Menu menu) throws IOException, BiffException,
 			RowsExceededException, WriteException, BadLocationException
 	{
-		InputStream template = Main.class.getResourceAsStream("/template.xls");
-		
 		String[] toks = new String[2];
 		String date = "";
 		String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
@@ -495,60 +494,95 @@ public class Main
 		toks = truncDates.get(choice - 1).split("-");
 		date = toks[1].toUpperCase() + "-" + toks[0];
 		
-		ExcelWriter frontLineSchedule = new ExcelWriter(template, day, date, year);
+		//Determine which schedule(s) to print based on checkbox state(s) of menu
+		if(menu.getCbxFrontLineState())
+		{
+			menu.print("\nRendering choice...\n");
+			
+			//Load in the Excel template
+			InputStream frontLineTemplate = Main.class.getResourceAsStream("/frontLineTemplate.xls");
+			
+			//Create Excel writer for Front Line shifts
+			ExcelWriter frontLineSchedule = new ExcelWriter(frontLineTemplate, "Front Line Schedule", day, date, year);
+			
+			//Write the day to cell B1
+			frontLineSchedule.overwriteEmptyCell(1, 0, day, 0);
+			
+			//Write the date to cell N1
+			frontLineSchedule.overwriteEmptyCell(13, 0, date + "-" + year, 0);
+			
+			displayFrontLineSchedule(day, myArray, rows, cols, frontLineSchedule);	
+			
+			menu.print("Done.\n\nFront Line schedule for " + day + ", " + date + "-" + year + " has been created.\n");
+			
+			frontLineSchedule.writeAndClose();
+		}
 		
-		frontLineSchedule.overwriteEmptyCell(1, 0, day, 0);
-		frontLineSchedule.overwriteEmptyCell(13, 0, date + "-" + year, 0);		
-		
-		menu.print("\nRendering choice...\n");
-		
-		displayFrontLineSchedule(day, myArray, rows, cols, frontLineSchedule);	
-		
-		menu.print("Done.\n\nFront Line schedule for " + day + ", " + date + "-" + year + " has been created.\n");
+		if(menu.getCbxCashierState())
+		{
+			menu.print("\nRendering choice...\n");
+			
+			//Load in the Excel template
+			InputStream cashierTemplate = Main.class.getResourceAsStream("/cashierTemplate.xls");
+			
+			//Create Excel writer for Cashier shifts
+			ExcelWriter cashierSchedule = new ExcelWriter(cashierTemplate, "Cashier Schedule", day, date, year);
+			
+			//Write the day to cell B1
+			cashierSchedule.overwriteEmptyCell(1, 0, day, 0);
+			
+			//Write the date to cell F1
+			cashierSchedule.overwriteEmptyCell(5, 0, date + "-" + year, 0);
+			
+			displayCashierSchedule(day, myArray, rows, cols, cashierSchedule);
+			
+			menu.print("Done.\n\nCashier schedule for " + day + ", " + date + "-" + year + " has been created.\n");
+			
+			cashierSchedule.writeAndClose();
+		}
 		
 		/*System.out.println("\n****************************************************");
 		System.out.println("Created By: Brett Allen");
-		System.out.println("****************************************************\n");*/
-		
-		frontLineSchedule.writeAndClose();
+		System.out.println("****************************************************\n");*/		
 	}
 	
 	//Method that calls the displayShifts method using the positions included in wall schedule
 	public static void displayFrontLineSchedule(String day, Shift[][] myArray, int rows,
 			int cols, ExcelWriter frontLineSchedule) throws IOException, RowsExceededException, WriteException
 	{			
-		displayShifts("Front Line Supv", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Front Line Supv", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Selfcheck Attendant", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Selfcheck Attendant", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Member Services", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Member Services", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Front Door", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Front Door", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Stock/Cart Retriever", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Stock/Cart Retriever", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Recovery", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Recovery", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Food", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Food", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Tire", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Tire", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Maintenance", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Maintenance", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Deli", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Deli", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Bakery", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Bakery", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Office", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Office", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Meat", day, myArray, rows, cols, frontLineSchedule);		
+		displayFrontLineShifts("Meat", day, myArray, rows, cols, frontLineSchedule);		
 		
-		displayShifts("Produce", day, myArray, rows, cols, frontLineSchedule);				
+		displayFrontLineShifts("Produce", day, myArray, rows, cols, frontLineSchedule);				
 	}
 	
 	public static void displayCashierSchedule(String day, Shift[][] myArray, int rows, int cols,
-			ExcelWriter frontLineSchedule) throws IOException, RowsExceededException, WriteException
+			ExcelWriter cashierSchedule) throws IOException, RowsExceededException, WriteException
 	{	
+		displayCashierShifts("Cashier", day, myArray, rows, cols, cashierSchedule);
 	}
 	
 	public static void displayTest(Shift[][] myArray, int rows, int cols, boolean printNull)
@@ -575,7 +609,7 @@ public class Main
 	}
 	
 	//Need to figure out a way to prevent printing duplicate shifts here
-	public static void displayShifts(String position, String day, Shift[][] myArray, int rows,
+	public static void displayFrontLineShifts(String position, String day, Shift[][] myArray, int rows,
 			int cols, ExcelWriter frontLineSchedule) throws IOException, RowsExceededException, WriteException
 	{
 		int excelCol = 0,
@@ -667,8 +701,16 @@ public class Main
 					{
 						if(frontLineSchedule.isEmptyCell(excelCol, excelRow))
 						{	
+							//Write the employees name to the ExcelWriter
 							frontLineSchedule.overwriteEmptyCell(excelCol, excelRow, myArray[x][y].getName(), 1);
+							
+							//Write that employees shift time next to the employee's name
 							frontLineSchedule.overwriteEmptyCell(excelCol + 1, excelRow, myArray[x][y].getShiftTime(), 2);
+							
+							//Make boarders for breaks and lunch cells
+							frontLineSchedule.overwriteEmptyCell(excelCol + 2, excelRow, "", 1);
+							frontLineSchedule.overwriteEmptyCell(excelCol + 3, excelRow, "", 1);
+							frontLineSchedule.overwriteEmptyCell(excelCol + 4, excelRow, "", 1);
 							break;
 						}
 						
@@ -678,6 +720,42 @@ public class Main
 				}			
 			}			
 		}
+	}
+	
+	public static void displayCashierShifts(String position, String day, Shift[][] myArray, int rows,
+			int cols, ExcelWriter cashierSchedule) throws RowsExceededException, WriteException, IOException
+	{
+		//Start at cell A4
+		int excelCol = 0,
+			excelRow = 3;
+		
+		for(int x = 0; x < rows; x++)
+		{
+			for(int y = 0; y < cols; y++)
+			{
+				if(myArray[x][y] != null && myArray[x][y].day == day
+						&& myArray[x][y].position.contains(position)
+						&& getMilitaryTime(myArray[x][y].endTime) > 900)
+				{	
+					//Write the employees name to the ExcelWriter
+					cashierSchedule.overwriteEmptyCell(excelCol, excelRow, myArray[x][y].getName(), 1);
+					
+					//Write that employees shift time next to the employee's name
+					cashierSchedule.overwriteEmptyCell(excelCol + 1, excelRow, myArray[x][y].getShiftTime(), 2);
+					
+					//Make boarders for the breaks, lunch, and comments cells
+					cashierSchedule.overwriteEmptyCell(excelCol + 2, excelRow, "", 1);
+					cashierSchedule.overwriteEmptyCell(excelCol + 3, excelRow, "", 1);
+					cashierSchedule.overwriteEmptyCell(excelCol + 4, excelRow, "", 1);
+					cashierSchedule.overwriteEmptyCell(excelCol + 5, excelRow, "", 1);
+					
+					excelRow++;
+				}
+			}
+		}
+		
+		//Once all cashiers have been written to the excel file, write a section for notes
+		cashierSchedule.overwriteEmptyCell(excelCol, excelRow, "Notes:", 3);
 	}
 	
 	//Get time in standard format and convert it to military time for comparison purposes
